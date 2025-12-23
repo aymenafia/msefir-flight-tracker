@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/icons/logo";
+import { AuthButton } from "../auth/auth-button";
 
 export function Header() {
   return (
@@ -11,6 +12,7 @@ export function Header() {
             msefir
           </span>
         </Link>
+        <AuthButton />
       </div>
     </header>
   );
