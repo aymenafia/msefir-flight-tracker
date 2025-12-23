@@ -19,9 +19,13 @@ export async function generateMetadata({ params }: FlightPageProps) {
     }
     const { flight } = flightData;
     return {
-        title: `Flight ${flight.flightNumber} Status | msefir`,
-        description: `Track the status for ${flight.airline} flight ${flight.flightNumber} from ${flight.departure.city} to ${flight.arrival.city}.`,
+        title: `Flight ${flight.flight.iata} Status | msefir`,
+        description: `Track the status for ${flight.airline.name} flight ${flight.flight.number} from ${flight.departure.airport} to ${flight.arrival.airport}.`,
     };
+}
+
+export async function generateStaticParams() {
+  return [];
 }
 
 
