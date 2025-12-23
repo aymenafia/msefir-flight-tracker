@@ -1,19 +1,13 @@
 
-import { generateHelpfulRoomStarter } from "@/ai/flows/helpful-room-starter";
 import type { Flight, FlightRoom, RoomMessage } from "./types";
-import { add, formatISO, isBefore, parseISO } from "date-fns";
-import { firestoreAdmin } from "./firebase-admin";
 
-const roomsCollection = "rooms";
-
-async function fetchFlightFromAPI(flightIata: string) {
+async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
   const airlineIata = flightIata.slice(0, 2);
   const flightNumber = flightIata.slice(2);
 
   const url = `http://api.aviationstack.com/v1/flights?access_key=${process.env.AVIATIONSTACK_API_KEY}&airline_iata=${airlineIata}&flight_number=${flightNumber}`;
 
   try {
-    // Use 'no-store' to ensure we always get fresh data, as we've removed DB caching for now.
     const response = await fetch(url, { cache: 'no-store' }); 
     if (!response.ok) {
       throw new Error(`AviationStack API error: ${response.statusText}`);
@@ -77,8 +71,13 @@ export const getFlightByNumber = async (
       return null;
     }
 
-    // Room creation logic remains, as it uses client-side or separate admin logic
-    const room = await getOrCreateRoom(upperCaseFlightNumber);
+    // Create a temporary mock room object since server-side fetch is disabled.
+    const room: FlightRoom = {
+      flightNumber: upperCaseFlightNumber,
+      status: "CLOSED", // Default to closed to indicate it's not active
+      activePassengers: 0,
+      messages: [],
+    };
 
     return { flight, room };
 
@@ -87,38 +86,3 @@ export const getFlightByNumber = async (
     return null;
   }
 };
-
-const getOrCreateRoom = async (flightNumber: string): Promise<FlightRoom> => {
-    const roomDocRef = firestoreAdmin.collection(roomsCollection).doc(flightNumber);
-    const messagesColRef = roomDocRef.collection('messages');
-
-    const messagesSnapshot = await messagesColRef.orderBy('createdAt', 'desc').get();
-    let flightMessages: RoomMessage[] = messagesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as RoomMessage));
-
-    if (flightMessages.length === 0) {
-        try {
-            const starter = await generateHelpfulRoomStarter({ flightNumber });
-            const aiMessage: Omit<RoomMessage, 'id'> = {
-                flightNumber: flightNumber,
-                type: 'info',
-                text: starter.message,
-                userId: 'msefir AI',
-                createdAt: formatISO(new Date()),
-                helpfulCount: 0,
-            };
-            const addedDoc = await messagesColRef.add(aiMessage);
-            flightMessages.push({ id: addedDoc.id, ...aiMessage });
-        } catch (error) {
-            console.error("AI starter message generation failed:", error);
-        }
-    }
-
-    const activePassengers = Math.floor(Math.random() * (150 - 20 + 1)) + 20;
-
-    return {
-        flightNumber: flightNumber,
-        status: "OPEN",
-        activePassengers: activePassengers,
-        messages: flightMessages,
-    };
-}

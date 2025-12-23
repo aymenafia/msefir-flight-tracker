@@ -1,9 +1,9 @@
+
 "use server";
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { MessageType } from "./types";
-import { firestoreAdmin, admin } from "./firebase-admin";
 import { formatISO } from "date-fns";
 import type { RoomMessage } from "./types";
 
@@ -15,49 +15,14 @@ const messageSchema = z.object({
 });
 
 export async function postMessageAction(prevState: any, formData: FormData) {
-  const validatedFields = messageSchema.safeParse({
-    flightNumber: formData.get("flightNumber"),
-    message: formData.get("message"),
-    type: formData.get("type"),
-    userId: formData.get("userId"),
-  });
-
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: "Validation failed.",
-    };
-  }
-  
-  try {
-    const { flightNumber, message, type, userId } = validatedFields.data;
-    const newMessage: Omit<RoomMessage, 'id'> = {
-        text: message,
-        type: type as MessageType,
-        userId: userId,
-        flightNumber,
-        createdAt: formatISO(new Date()),
-        helpfulCount: 0,
-    };
-    await firestoreAdmin.collection(`rooms/${flightNumber}/messages`).add(newMessage);
-    revalidatePath(`/flight/${flightNumber}`);
-    return { message: "Message posted successfully.", errors: {} };
-  } catch (error) {
-    console.error("Failed to post message:", error);
-    return { message: "Failed to post message.", errors: {} };
-  }
+  // This action is now disabled as it depends on the Firebase Admin SDK.
+  console.error("postMessageAction is disabled due to server-side Firebase issues.");
+  return { message: "Failed to post message. This feature is temporarily disabled.", errors: {} };
 }
 
 export async function incrementHelpfulAction(messageId: string, flightNumber: string) {
-    try {
-        const messageRef = firestoreAdmin.doc(`rooms/${flightNumber}/messages/${messageId}`);
-        await messageRef.update({
-            helpfulCount: admin.firestore.FieldValue.increment(1)
-        });
-        revalidatePath(`/flight/${flightNumber}`);
-    } catch (error) {
-        console.error("Failed to increment helpful count:", error);
-    }
+  // This action is now disabled as it depends on the Firebase Admin SDK.
+  console.error("incrementHelpfulAction is disabled due to server-side Firebase issues.");
 }
 
 export async function summarizeFlightUpdates(flightNumber: string, messages: any[]) {
