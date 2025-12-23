@@ -21,7 +21,7 @@ export function SupportedAirlines() {
             </div>
             <div className="flex justify-center">
               <img
-                src="/images/airlines/Air_Algérie_Logo.png"
+                src="/images/airlines/AirAlgerieLogo.png"
                 alt="Air Algérie logo"
                 className="h-10 w-auto object-contain"
               />
