@@ -29,6 +29,22 @@ export function MessageCard({ message }: MessageCardProps) {
   const isAIMessage = message.userId === "msefir AI";
   const IconComponent = isAIMessage ? Sparkles : messageTypeIcons[message.type];
 
+  const renderTimestamp = () => {
+    if (!message.createdAt) {
+      return "pending...";
+    }
+    try {
+      const date = new Date(message.createdAt);
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        return "just now";
+      }
+      return formatDistanceToNow(date, { addSuffix: true });
+    } catch (error) {
+      return "just now";
+    }
+  };
+
   return (
     <Card className={cn(
       "shadow-sm",
@@ -40,7 +56,7 @@ export function MessageCard({ message }: MessageCardProps) {
           <span className={cn("font-semibold text-primary", isAIMessage && "text-accent-foreground")}>{message.userId}</span>
         </div>
         <time className="text-xs text-muted-foreground">
-          {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+          {renderTimestamp()}
         </time>
       </CardHeader>
       <CardContent className="px-4 pb-4">
