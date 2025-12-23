@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useUser } from '@/firebase';
@@ -20,7 +21,8 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
     if (!user || user.isAnonymous) {
         if (!isLoginPage) {
-            router.replace('/login');
+            const redirectUrl = `/login?redirect=${encodeURIComponent(pathname)}`;
+            router.replace(redirectUrl);
         }
     } else {
       if (isLoginPage) {

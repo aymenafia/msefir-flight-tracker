@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAuth, useUser } from '@/firebase';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { initiateGoogleSignIn } from '@/firebase/auth-mutations';
 import { useTranslation } from '@/hooks/use-translation';
 import { Logo } from '@/components/icons/logo';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const { user, isUserLoading } = useUser();
   const { t } = useTranslation();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleSignIn = () => {
     if (auth) {
@@ -23,9 +25,10 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!isUserLoading && user && !user.isAnonymous) {
-      router.replace('/');
+      const redirectUrl = searchParams.get('redirect') || '/';
+      router.replace(redirectUrl);
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, searchParams]);
 
   if (isUserLoading || (user && !user.isAnonymous)) {
     return (
