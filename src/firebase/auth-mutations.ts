@@ -1,9 +1,11 @@
+
 'use client';
 import {
   Auth,
   signInAnonymously,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
   signOut,
   FirebaseError,
 } from 'firebase/auth';
@@ -17,9 +19,19 @@ export function initiateAnonymousSignIn(authInstance: Auth): void {
 export function initiateGoogleSignIn(authInstance: Auth): void {
   const provider = new GoogleAuthProvider();
   signInWithPopup(authInstance, provider).catch((error: FirebaseError) => {
-    // This error occurs when the user closes the popup.
-    // We can safely ignore it, as it's a normal user action.
-    if (error.code !== 'auth/popup-closed-by-user') {
+    // Handle common popup errors
+    if (error.code === 'auth/popup-closed-by-user') {
+      // User closed the popup, this is a normal action, so we can safely ignore.
+      console.log('Google Sign-In popup closed by user.');
+    } else if (error.code === 'auth/popup-blocked') {
+      // The browser blocked the popup. This can happen for various security reasons.
+      // We can fall back to a redirect-based sign-in method which is more reliable.
+      console.warn(
+        'Google Sign-In popup was blocked by the browser. Falling back to redirect method.'
+      );
+      signInWithRedirect(authInstance, provider);
+    } else {
+      // For other errors, log them for debugging.
       console.error('Google Sign-In Error:', error);
     }
   });
