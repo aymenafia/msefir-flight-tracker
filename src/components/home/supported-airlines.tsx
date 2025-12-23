@@ -43,7 +43,7 @@ export function SupportedAirlines() {
             </div>
             <div className="flex justify-center">
               <img
-                src="/images/airlines/Air_Arabia_Logo.png"
+                src="/images/airlines/Air_Arabia_Logo.jpg"
                 alt="Air Arabia Maroc logo"
                 className="h-10 w-auto object-contain"
               />
