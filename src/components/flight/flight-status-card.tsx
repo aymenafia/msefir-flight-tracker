@@ -11,36 +11,52 @@ type FlightStatusCardProps = {
   flight: Flight;
 };
 
-const getStatusVariant = (status: Flight["status"]) => {
+const getStatusVariant = (status: Flight["flight_status"]) => {
   switch (status) {
-    case "On Time":
+    case "scheduled":
+      return "default";
+    case "active":
+    case "landed":
       return "success";
-    case "Delayed":
+    case "delayed":
       return "warning";
-    case "Cancelled":
+    case "cancelled":
       return "destructive";
     default:
       return "default";
   }
 };
 
+const statusLabel: Record<string, string> = {
+    scheduled: "Scheduled",
+    active: "Active",
+    landed: "Landed",
+    delayed: "Delayed",
+    cancelled: "Cancelled",
+}
+
+
 export function FlightStatusCard({ flight }: FlightStatusCardProps) {
-  const scheduledDepartureTime = parseISO(flight.scheduledDeparture);
-  const estimatedDepartureTime = parseISO(flight.estimatedDeparture);
+  const scheduledDepartureTime = parseISO(flight.departure.scheduled);
+  const estimatedDepartureTime = parseISO(flight.departure.estimated ?? flight.departure.scheduled);
+
+  const scheduledArrivalTime = parseISO(flight.arrival.scheduled);
+  const estimatedArrivalTime = parseISO(flight.arrival.estimated ?? flight.arrival.scheduled);
+
 
   return (
     <Card className="shadow-lg overflow-hidden">
       <CardHeader className="bg-muted/30">
         <div className="flex justify-between items-start">
           <div>
-            <CardDescription className="font-medium text-primary">{flight.airline}</CardDescription>
-            <CardTitle className="text-4xl font-bold tracking-wider font-mono">{flight.flightNumber}</CardTitle>
+            <CardDescription className="font-medium text-primary">{flight.airline.name}</CardDescription>
+            <CardTitle className="text-4xl font-bold tracking-wider font-mono">{flight.flight.iata}</CardTitle>
           </div>
           <div className="flex items-center gap-2">
-            <FavoritesButton flightNumber={flight.flightNumber} />
+            <FavoritesButton flightNumber={flight.flight.iata} />
             <RefreshButton lastUpdated={flight.lastUpdated} />
-            <Badge variant={getStatusVariant(flight.status)} className="text-base px-3 py-1">
-              {flight.status}
+            <Badge variant={getStatusVariant(flight.flight_status)} className="text-base px-3 py-1">
+              {statusLabel[flight.flight_status] || "On Time"}
             </Badge>
           </div>
         </div>
@@ -49,14 +65,14 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
         <div className="flex items-center justify-between space-x-4">
           <div className="text-center w-2/5">
             <p className="text-2xl md:text-4xl font-bold">{flight.departure.iata}</p>
-            <p className="text-sm text-muted-foreground truncate">{flight.departure.city}</p>
+            <p className="text-sm text-muted-foreground truncate">{flight.departure.airport}</p>
           </div>
           <div className="flex-shrink-0 text-muted-foreground">
             <Plane className="w-8 h-8" />
           </div>
           <div className="text-center w-2/5">
             <p className="text-2xl md:text-4xl font-bold">{flight.arrival.iata}</p>
-            <p className="text-sm text-muted-foreground truncate">{flight.arrival.city}</p>
+            <p className="text-sm text-muted-foreground truncate">{flight.arrival.airport}</p>
           </div>
         </div>
 
@@ -65,21 +81,21 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
                 <p className="text-sm font-medium text-muted-foreground">Departure</p>
                 <p className={cn(
                     "text-2xl font-semibold",
-                    flight.status === "Delayed" && "text-warning-foreground bg-warning/10 rounded-md py-1"
+                    flight.flight_status === "delayed" && "text-warning-foreground bg-warning/10 rounded-md py-1"
                 )}>
                     {format(estimatedDepartureTime, "HH:mm")}
                 </p>
-                <p className={cn("text-sm", flight.status === "Delayed" && "line-through text-muted-foreground")}>
+                <p className={cn("text-sm", flight.flight_status === "delayed" && "line-through text-muted-foreground")}>
                     Scheduled {format(scheduledDepartureTime, "HH:mm")}
                 </p>
             </div>
             <div className="bg-muted/30 p-4 rounded-lg">
                 <p className="text-sm font-medium text-muted-foreground">Arrival</p>
                 <p className="text-2xl font-semibold">
-                    {format(parseISO(flight.estimatedArrival), "HH:mm")}
+                    {format(estimatedArrivalTime, "HH:mm")}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                    Scheduled {format(parseISO(flight.scheduledArrival), "HH:mm")}
+                    Scheduled {format(scheduledArrivalTime, "HH:mm")}
                 </p>
             </div>
         </div>

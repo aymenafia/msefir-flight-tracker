@@ -1,177 +1,148 @@
 import { generateHelpfulRoomStarter } from "@/ai/flows/helpful-room-starter";
 import type { Flight, FlightRoom, RoomMessage } from "./types";
-import { add, sub, formatISO } from "date-fns";
+import { add, sub, formatISO, isBefore } from "date-fns";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { initializeFirebase } from "@/firebase";
 
-let mockMessages: RoomMessage[] = [
-  {
-    id: "msg1",
-    flightNumber: "TU723",
-    type: "gate",
-    text: "Gate changed to B25. They just announced it.",
-    userId: "Passenger #102",
-    createdAt: sub(new Date(), { minutes: 45 }).toISOString(),
-    helpfulCount: 5,
-  },
-  {
-    id: "msg2",
-    flightNumber: "TU723",
-    type: "boarding",
-    text: "Boarding has started for groups 1-3.",
-    userId: "Passenger #23",
-    createdAt: sub(new Date(), { minutes: 20 }).toISOString(),
-    helpfulCount: 12,
-  },
-  {
-    id: "msg3",
-    flightNumber: "TU723",
-    type: "question",
-    text: "Is the flight full? Wondering about upgrade chances.",
-    userId: "Passenger #88",
-    createdAt: sub(new Date(), { minutes: 10 }).toISOString(),
-    helpfulCount: 2,
-  },
-];
+// Initialize Firebase
+const { firestore } = initializeFirebase();
+const flightsCollection = "flights";
 
-const mockFlights: Flight[] = [
-  {
-    flightNumber: "TU723",
-    airline: "Tunisair",
-    departure: {
-      iata: "TUN",
-      name: "Tunis-Carthage Airport",
-      city: "Tunis",
-      country: "Tunisia",
-    },
-    arrival: {
-      iata: "ORY",
-      name: "Paris-Orly Airport",
-      city: "Paris",
-      country: "France",
-    },
-    scheduledDeparture: add(new Date(), { hours: 2 }).toISOString(),
-    estimatedDeparture: add(new Date(), { hours: 2, minutes: 15 }).toISOString(),
-    scheduledArrival: add(new Date(), { hours: 4, minutes: 30 }).toISOString(),
-    estimatedArrival: add(new Date(), { hours: 4, minutes: 45 }).toISOString(),
-    status: "Delayed",
-    lastUpdated: new Date().toISOString(),
-  },
-  {
-    flightNumber: "AH1002",
-    airline: "Air Algérie",
-    departure: {
-      iata: "ALG",
-      name: "Houari Boumediene Airport",
-      city: "Algiers",
-      country: "Algeria",
-    },
-    arrival: {
-      iata: "CDG",
-      name: "Charles de Gaulle Airport",
-      city: "Paris",
-      country: "France",
-    },
-    scheduledDeparture: add(new Date(), { hours: 1 }).toISOString(),
-    estimatedDeparture: add(new Date(), { hours: 1 }).toISOString(),
-    scheduledArrival: add(new Date(), { hours: 3, minutes: 15 }).toISOString(),
-    estimatedArrival: add(new Date(), { hours: 3, minutes: 15 }).toISOString(),
-    status: "On Time",
-    lastUpdated: new Date().toISOString(),
-  },
-  {
-    flightNumber: "AT550",
-    airline: "Royal Air Maroc",
-    departure: {
-      iata: "CMN",
-      name: "Mohammed V International Airport",
-      city: "Casablanca",
-      country: "Morocco",
-    },
-    arrival: {
-      iata: "JFK",
-      name: "John F. Kennedy International Airport",
-      city: "New York",
-      country: "USA",
-    },
-    scheduledDeparture: sub(new Date(), { hours: 1 }).toISOString(),
-    estimatedDeparture: sub(new Date(), { hours: 1 }).toISOString(),
-    scheduledArrival: add(new Date(), { hours: 7 }).toISOString(),
-    estimatedArrival: add(new Date(), { hours: 7 }).toISOString(),
-    status: "Cancelled",
-    lastUpdated: new Date().toISOString(),
-  },
-];
+let mockMessages: RoomMessage[] = []; // We will fetch messages from Firestore
 
-// Simulate a database/cache for flight data
-const flightCache = new Map<string, { flight: Flight; room: FlightRoom; timestamp: number }>();
+async function fetchFlightFromAPI(flightIata: string) {
+  const airlineIata = flightIata.slice(0, 2);
+  const flightNumber = flightIata.slice(2);
+
+  const url = `http://api.aviationstack.com/v1/flights?access_key=${process.env.AVIATIONSTACK_API_KEY}&airline_iata=${airlineIata}&flight_number=${flightNumber}`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`AviationStack API error: ${response.statusText}`);
+    }
+    const data = await response.json();
+    if (!data.data || data.data.length === 0) {
+      return null;
+    }
+    const flightData = data.data[0];
+
+    // Normalize the response
+    const normalized: Flight = {
+      airline: {
+        name: flightData.airline.name,
+        iata: flightData.airline.iata,
+        icao: flightData.airline.icao,
+      },
+      flight: {
+        number: flightData.flight.number,
+        iata: flightData.flight.iata,
+        icao: flightData.flight.icao,
+      },
+      departure: {
+        airport: flightData.departure.airport,
+        iata: flightData.departure.iata,
+        scheduled: flightData.departure.scheduled,
+        estimated: flightData.departure.estimated,
+        actual: flightData.departure.actual,
+        terminal: flightData.departure.terminal,
+        gate: flightData.departure.gate,
+      },
+      arrival: {
+        airport: flightData.arrival.airport,
+        iata: flightData.arrival.iata,
+        scheduled: flightData.arrival.scheduled,
+        estimated: flightData.arrival.estimated,
+        actual: flightData.arrival.actual,
+        terminal: flightData.arrival.terminal,
+        gate: flightData.arrival.gate,
+      },
+      flight_status: flightData.flight_status,
+      lastUpdated: new Date().toISOString(),
+    };
+
+    return normalized;
+  } catch (error) {
+    console.error("Failed to fetch from AviationStack:", error);
+    throw error;
+  }
+}
 
 export const getFlightByNumber = async (
   flightNumber: string
 ): Promise<{ flight: Flight; room: FlightRoom } | null> => {
   const upperCaseFlightNumber = flightNumber.toUpperCase();
-  const now = Date.now();
+  const now = new Date();
 
-  // 1. Check cache
-  if (flightCache.has(upperCaseFlightNumber)) {
-    const cached = flightCache.get(upperCaseFlightNumber)!;
-    // Cache is valid for 1 minute for demonstration purposes
-    if (now - cached.timestamp < 60 * 1000) {
-      console.log(`Returning cached data for ${upperCaseFlightNumber}`);
-      return { flight: cached.flight, room: cached.room };
+  const flightDocRef = doc(firestore, flightsCollection, upperCaseFlightNumber);
+
+  try {
+    const flightDoc = await getDoc(flightDocRef);
+
+    if (flightDoc.exists()) {
+      const cachedFlight = flightDoc.data() as Flight;
+      const cacheTime = parseISO(cachedFlight.lastUpdated);
+      const cacheExpiry = add(cacheTime, { minutes: 15 });
+
+      if (isBefore(now, cacheExpiry)) {
+        console.log(`Returning cached data for ${upperCaseFlightNumber}`);
+        // For now, we will continue with mock messages
+        const room = await getOrCreateRoom(upperCaseFlightNumber);
+        return { flight: cachedFlight, room };
+      }
     }
-  }
-  
-  console.log(`Fetching fresh data for ${upperCaseFlightNumber}`);
-  // 2. Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  const flight = mockFlights.find(
-    (f) => f.flightNumber === upperCaseFlightNumber
-  );
+    console.log(`Fetching fresh data for ${upperCaseFlightNumber}`);
+    const flight = await fetchFlightFromAPI(upperCaseFlightNumber);
 
-  if (!flight) {
+    if (!flight) {
+      return null;
+    }
+
+    await setDoc(flightDocRef, flight);
+
+    const room = await getOrCreateRoom(upperCaseFlightNumber);
+
+    return { flight, room };
+
+  } catch (error) {
+    console.error(`Error fetching flight ${upperCaseFlightNumber}:`, error);
     return null;
   }
-  
-  flight.lastUpdated = new Date().toISOString();
-
-  let flightMessages = mockMessages.filter(
-    (m) => m.flightNumber === upperCaseFlightNumber
-  );
-
-  // If no messages, use AI to generate a starter message
-  if (flightMessages.length === 0) {
-    try {
-      const starter = await generateHelpfulRoomStarter({ flightNumber: upperCaseFlightNumber });
-      const aiMessage: RoomMessage = {
-        id: 'ai-starter',
-        flightNumber: upperCaseFlightNumber,
-        type: 'info',
-        text: starter.message,
-        userId: 'msefir AI',
-        createdAt: new Date().toISOString(),
-        helpfulCount: 0,
-      };
-      flightMessages.push(aiMessage);
-      // Add to main mock messages so it persists for the session
-      mockMessages.push(aiMessage);
-    } catch (error) {
-      console.error("AI starter message generation failed:", error);
-    }
-  }
-
-
-  const room: FlightRoom = {
-    flightNumber: upperCaseFlightNumber,
-    status: flight.status === "Cancelled" ? "CLOSED" : "OPEN",
-    activePassengers: Math.floor(Math.random() * (150 - 20 + 1)) + 20,
-    messages: flightMessages.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
-  };
-
-  // 3. Update cache
-  flightCache.set(upperCaseFlightNumber, { flight, room, timestamp: now });
-
-  return { flight, room };
 };
+
+const getOrCreateRoom = async (flightNumber: string): Promise<FlightRoom> => {
+    // In a real app, this would check firestore for a room and its messages
+    let flightMessages = mockMessages.filter(
+        (m) => m.flightNumber === flightNumber
+    );
+
+    if (flightMessages.length === 0) {
+        try {
+            const starter = await generateHelpfulRoomStarter({ flightNumber });
+            const aiMessage: RoomMessage = {
+                id: 'ai-starter',
+                flightNumber: flightNumber,
+                type: 'info',
+                text: starter.message,
+                userId: 'msefir AI',
+                createdAt: new Date().toISOString(),
+                helpfulCount: 0,
+            };
+            flightMessages.push(aiMessage);
+            mockMessages.push(aiMessage);
+        } catch (error) {
+            console.error("AI starter message generation failed:", error);
+        }
+    }
+
+    return {
+        flightNumber: flightNumber,
+        status: "OPEN",
+        activePassengers: Math.floor(Math.random() * (150 - 20 + 1)) + 20,
+        messages: flightMessages.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    };
+}
 
 
 export const addMessageToFlight = (flightNumber: string, message: Omit<RoomMessage, 'id' | 'flightNumber' | 'helpfulCount' | 'createdAt'>): RoomMessage => {
@@ -184,9 +155,8 @@ export const addMessageToFlight = (flightNumber: string, message: Omit<RoomMessa
   };
   mockMessages.unshift(newMessage);
   
-  // Invalidate cache for this flight
-  flightCache.delete(flightNumber);
-
+  // In a real app, this would invalidate a cache, here we just add to the mock array
+  
   return newMessage;
 };
 
@@ -194,8 +164,6 @@ export const incrementHelpfulCount = (messageId: string): RoomMessage | undefine
   const message = mockMessages.find(m => m.id === messageId);
   if (message) {
     message.helpfulCount++;
-    // Invalidate cache for this flight
-    flightCache.delete(message.flightNumber);
   }
   return message;
 }

@@ -1,23 +1,36 @@
-export type FlightStatus = "On Time" | "Delayed" | "Cancelled" | "Landed" | "Scheduled";
-
-export type Airport = {
-  iata: string;
-  name: string;
-  city: string;
-  country: string;
-};
+export type FlightStatus = "scheduled" | "active" | "landed" | "cancelled" | "delayed";
 
 export type Flight = {
-  flightNumber: string;
-  airline: string;
-  departure: Airport;
-  arrival: Airport;
-  scheduledDeparture: string;
-  estimatedDeparture: string;
-  scheduledArrival: string;
-  estimatedArrival: string;
-  status: FlightStatus;
-  lastUpdated: string;
+    airline: {
+        name: string;
+        iata: string;
+        icao: string;
+    };
+    flight: {
+        number: string;
+        iata: string;
+        icao: string;
+    };
+    departure: {
+        airport: string;
+        iata: string;
+        scheduled: string;
+        estimated: string;
+        actual: string | null;
+        terminal: string | null;
+        gate: string | null;
+    };
+    arrival: {
+        airport: string;
+        iata: string;
+        scheduled: string;
+        estimated: string;
+        actual: string | null;
+        terminal: string | null;
+        gate: string | null;
+    };
+    flight_status: FlightStatus;
+    lastUpdated: string;
 };
 
 export type MessageType = "boarding" | "gate" | "delay" | "info" | "question";
