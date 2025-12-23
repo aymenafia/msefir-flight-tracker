@@ -8,7 +8,7 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
   const url = `http://api.aviationstack.com/v1/flights?access_key=${process.env.AVIATIONSTACK_API_KEY}&airline_iata=${airlineIata}&flight_number=${flightNumber}`;
 
   try {
-    const response = await fetch(url, { cache: 'no-store' }); 
+    const response = await fetch(url, { next: { revalidate: 600 } });
     if (!response.ok) {
       throw new Error(`AviationStack API error: ${response.statusText}`);
     }
@@ -64,7 +64,6 @@ export const getFlightByNumber = async (
   const upperCaseFlightNumber = flightNumber.toUpperCase();
 
   try {
-    console.log(`Fetching fresh data for ${upperCaseFlightNumber}`);
     const flight = await fetchFlightFromAPI(upperCaseFlightNumber);
 
     if (!flight) {
@@ -74,7 +73,7 @@ export const getFlightByNumber = async (
     // Create a temporary mock room object since server-side fetch is disabled.
     const room: FlightRoom = {
       flightNumber: upperCaseFlightNumber,
-      status: "CLOSED", // Default to closed to indicate it's not active
+      status: "OPEN", // Default to open for client-side handling
       activePassengers: 0,
       messages: [],
     };

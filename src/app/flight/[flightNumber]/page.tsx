@@ -1,4 +1,5 @@
 
+
 import { getFlightByNumber } from "@/lib/data";
 import { notFound } from "next/navigation";
 import { FlightStatusCard } from "@/components/flight/flight-status-card";
@@ -43,9 +44,9 @@ export default async function FlightPage({ params }: FlightPageProps) {
     <div className="container mx-auto max-w-4xl p-4 md:p-8">
       <FlightStatusCard flight={flight} />
       
-      {/* <Separator className="my-8" />
+      <Separator className="my-8" />
       
-      <FlightRoom room={room} /> */}
+      <FlightRoom room={room} flightNumber={flight.flight.iata} />
     </div>
   );
 }

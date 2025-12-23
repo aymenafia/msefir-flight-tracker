@@ -1,72 +1,72 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
-import { useFormStatus } from "react-dom";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { postMessageAction } from "@/lib/actions";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { useStableUserId } from "@/hooks/use-stable-user-id";
+import { useUser, useFirestore } from "@/firebase";
 import { Card, CardContent } from "../ui/card";
 import { Loader2 } from "lucide-react";
+import { postMessage } from "@/lib/firestore-mutations";
 
 type MessagePostFormProps = {
   flightNumber: string;
 };
 
 const formSchema = z.object({
-  message: z.string().min(5, "Message must be at least 5 characters long.").max(200, "Message cannot exceed 200 characters."),
+  text: z.string().min(5, "Message must be at least 5 characters long.").max(200, "Message cannot exceed 200 characters."),
   type: z.enum(["boarding", "gate", "delay", "info", "question"]),
 });
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" disabled={pending}>
-      {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-      Post Update
-    </Button>
-  );
-}
+type FormData = z.infer<typeof formSchema>;
 
 export function MessagePostForm({ flightNumber }: MessagePostFormProps) {
-  const [state, formAction] = useActionState(postMessageAction, { message: null, errors: {} });
-  const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
-  const userId = useStableUserId();
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      message: "",
+      text: "",
       type: "info",
     },
   });
 
-  useEffect(() => {
-    if (state.message === "Message posted successfully.") {
-      form.reset();
-      formRef.current?.reset();
-      toast({
+  const { formState, handleSubmit, reset } = form;
+
+  const onSubmit = async (data: FormData) => {
+    if (!user || !firestore) {
+        toast({ variant: "destructive", title: "You must be signed in to post." });
+        return;
+    }
+    
+    await postMessage(firestore, flightNumber, { ...data, userId: user.uid });
+    
+    reset();
+    toast({
         title: "Success!",
         description: "Your message has been posted.",
-      });
-    } else if (state.message === "Validation failed." || state.message === "Failed to post message.") {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: state.message,
-      });
-    }
-  }, [state, form, toast]);
+    });
+  };
 
-  if (!userId) {
-    return <div className="h-24"><Loader2 className="m-auto h-6 w-6 animate-spin text-muted-foreground" /></div>
+  if (isUserLoading) {
+    return <div className="h-24 flex justify-center items-center"><Loader2 className="m-auto h-6 w-6 animate-spin text-muted-foreground" /></div>
+  }
+  
+  if (!user) {
+    return (
+        <Card>
+            <CardContent className="p-4 text-center text-muted-foreground">
+                <p>Please sign in to join the conversation.</p>
+            </CardContent>
+        </Card>
+    )
   }
 
   return (
@@ -74,21 +74,17 @@ export function MessagePostForm({ flightNumber }: MessagePostFormProps) {
         <CardContent className="p-4">
             <Form {...form}>
                 <form
-                    ref={formRef}
-                    action={formAction}
+                    onSubmit={handleSubmit(onSubmit)}
                     className="space-y-4"
                 >
-                    <input type="hidden" name="flightNumber" value={flightNumber} />
-                    <input type="hidden" name="userId" value={userId} />
-
                     <FormField
                         control={form.control}
-                        name="message"
+                        name="text"
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
                                 <Textarea
-                                    placeholder={`Posting as ${userId}. Share a helpful update...`}
+                                    placeholder={`Share a helpful update...`}
                                     className="resize-none"
                                     {...field}
                                 />
@@ -107,7 +103,7 @@ export function MessagePostForm({ flightNumber }: MessagePostFormProps) {
                                     <FormControl>
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Select type" />
-                                    </SelectTrigger>
+                                    </Trigger>
                                     </FormControl>
                                     <SelectContent>
                                     <SelectItem value="info">Info</SelectItem>
@@ -121,7 +117,10 @@ export function MessagePostForm({ flightNumber }: MessagePostFormProps) {
                                 </FormItem>
                             )}
                         />
-                        <SubmitButton />
+                        <Button type="submit" disabled={formState.isSubmitting}>
+                            {formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Post Update
+                        </Button>
                     </div>
                 </form>
             </Form>

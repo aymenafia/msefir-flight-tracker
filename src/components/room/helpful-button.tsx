@@ -4,8 +4,9 @@ import { useState, useTransition } from "react";
 import type { RoomMessage } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { ThumbsUp } from "lucide-react";
-import { incrementHelpfulAction } from "@/lib/actions";
+import { incrementHelpfulCount } from "@/lib/firestore-mutations";
 import { cn } from "@/lib/utils";
+import { useFirestore } from "@/firebase";
 
 type HelpfulButtonProps = {
   message: RoomMessage;
@@ -14,12 +15,13 @@ type HelpfulButtonProps = {
 export function HelpfulButton({ message }: HelpfulButtonProps) {
   const [isPending, startTransition] = useTransition();
   const [wasClicked, setWasClicked] = useState(false);
+  const firestore = useFirestore();
 
   const handleClick = () => {
-    if (wasClicked || isPending) return;
+    if (wasClicked || isPending || !firestore) return;
     setWasClicked(true);
     startTransition(() => {
-      incrementHelpfulAction(message.id, message.flightNumber);
+      incrementHelpfulCount(firestore, message.flightNumber, message.id);
     });
   };
 
