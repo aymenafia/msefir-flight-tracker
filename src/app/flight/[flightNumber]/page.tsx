@@ -1,5 +1,4 @@
 
-
 import { getFlightByNumber } from "@/lib/data";
 import { notFound } from "next/navigation";
 import { FlightStatusCard } from "@/components/flight/flight-status-card";
