@@ -4,10 +4,10 @@ import { useTranslation } from '@/hooks/use-translation';
 import { Card, CardContent } from '@/components/ui/card';
 
 const airlines = [
-  { name: 'Royal Air Maroc', logo: '/images/airlines/royal-air-maroc.png' },
+  { name: 'Royal Air Maroc', logo: '/images/airlines/Logo_Royal_Air_Maroc.png' },
   { name: 'Air Algérie', logo: '/images/airlines/Air_Algérie_Logo.png' },
-  { name: 'Tunisair', logo: '/images/airlines/tunisair.png' },
-  { name: 'Nouvelair', logo: '/images/airlines/nouvelair.png' },
+  { name: 'Tunisair', logo: '/images/airlines/TunisAir_Logo.png' },
+  { name: 'Nouvelair', logo: '/images/airlines/Nouvelair_Logo.png' },
   { name: 'Air Arabia Maroc', logo: '/images/airlines/air-arabia-maroc.png' },
 ];
 
