@@ -101,8 +101,8 @@ export const getFlightByNumber = async (
 
     return { flight, room };
 
-  } catch (error) {
-    console.error(`Error fetching flight ${upperCaseFlightNumber}:`, error || new Error("Unknown error"));
+  } catch (error: any) {
+    console.error(`Error fetching flight ${upperCaseFlightNumber}: ${error.message || 'Unknown error'}`);
     // In case of API/DB error, don't crash the page.
     // Consider returning a specific error state to the UI.
     return null;
