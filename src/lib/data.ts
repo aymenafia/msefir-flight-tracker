@@ -1,3 +1,4 @@
+
 import { generateHelpfulRoomStarter } from "@/ai/flows/helpful-room-starter";
 import type { Flight, FlightRoom, RoomMessage } from "./types";
 import { add, formatISO, isBefore, parseISO } from "date-fns";
@@ -101,7 +102,7 @@ export const getFlightByNumber = async (
     return { flight, room };
 
   } catch (error) {
-    console.error(`Error fetching flight ${upperCaseFlightNumber}:`, error);
+    console.error(`Error fetching flight ${upperCaseFlightNumber}:`, error || new Error("Unknown error"));
     // In case of API/DB error, don't crash the page.
     // Consider returning a specific error state to the UI.
     return null;
