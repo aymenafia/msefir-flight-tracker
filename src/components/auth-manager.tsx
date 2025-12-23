@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useAuth, useUser } from '@/firebase';
-import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
+import { initiateAnonymousSignIn } from '@/firebase/auth-mutations';
 
 /**
  * An invisible component that manages the user's authentication state.
