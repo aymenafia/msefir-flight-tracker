@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useTransition } from "react";
@@ -25,6 +24,8 @@ export function UnhelpfulButton({ message }: UnhelpfulButtonProps) {
       incrementUnhelpfulCount(firestore, message.flightId, message.id);
     });
   };
+  
+  const currentCount = message.unhelpfulCount || 0;
 
   return (
     <Button
@@ -36,7 +37,7 @@ export function UnhelpfulButton({ message }: UnhelpfulButtonProps) {
     >
       <ThumbsDown className="w-4 h-4 mr-2" />
       <span className="ml-2 bg-muted px-2 py-0.5 rounded-full text-xs">
-        {message.unhelpfulCount + (wasClicked ? 1 : 0)}
+        {currentCount + (wasClicked ? 1 : 0)}
       </span>
     </Button>
   );

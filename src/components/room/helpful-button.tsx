@@ -25,6 +25,8 @@ export function HelpfulButton({ message }: HelpfulButtonProps) {
     });
   };
 
+  const currentCount = message.helpfulCount || 0;
+
   return (
     <Button
       variant="ghost"
@@ -36,7 +38,7 @@ export function HelpfulButton({ message }: HelpfulButtonProps) {
       <ThumbsUp className="w-4 h-4 mr-2" />
       Helpful
       <span className="ml-2 bg-muted px-2 py-0.5 rounded-full text-xs">
-        {message.helpfulCount + (wasClicked ? 1 : 0)}
+        {currentCount + (wasClicked ? 1 : 0)}
       </span>
     </Button>
   );
