@@ -12,9 +12,6 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
   title: "msefir — Check your flight status easily",
   description: "msefir is a simple flight status tracker for travelers in the Maghreb region. Fast, clear, and stress-free flight information.",
-  icons: {
-    apple: "/icon.png",
-  },
 };
 
 export default function RootLayout({
@@ -25,15 +22,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-body antialiased`}>
-        <LanguageProvider>
           <FirebaseClientProvider>
             <AuthManager />
             <AuthGate>
-              {children}
+              <LanguageProvider>
+                {children}
+              </LanguageProvider>
             </AuthGate>
             <Toaster />
           </FirebaseClientProvider>
-        </LanguageProvider>
       </body>
     </html>
   );

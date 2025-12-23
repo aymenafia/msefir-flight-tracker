@@ -15,7 +15,11 @@
         "signIn": "Se connecter",
         "signOut": "Se déconnecter",
         "loading": "Chargement...",
-        "signInWithGoogle": "Se connecter avec Google"
+        "signInWithGoogle": "Se connecter avec Google",
+        "welcome": "Bienvenue à msefir",
+        "signInToTrack": "Connectez-vous pour suivre vos vols",
+        "openInBrowserTitle": "Veuillez ouvrir dans le navigateur",
+        "openInBrowserText": "Pour vous connecter en toute sécurité, veuillez ouvrir cette page dans le navigateur principal de votre téléphone (comme Chrome ou Safari) et réessayer."
     },
     "flight": {
         "notFound": "Vol non trouvé",

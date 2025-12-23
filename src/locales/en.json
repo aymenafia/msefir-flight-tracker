@@ -15,7 +15,12 @@
         "signIn": "Sign In",
         "signOut": "Log out",
         "loading": "Loading...",
-        "signInWithGoogle": "Sign in with Google"
+        "signInWithGoogle": "Sign in with Google",
+        "welcome": "Welcome to msefir",
+        "signInToTrack": "Sign in to track your flights",
+        "openInBrowserTitle": "Please Open in Browser",
+        "openInBrowserText": "To sign in securely, please open this page in your phone's main browser (like Chrome or Safari) and try again."
+
     },
     "flight": {
         "notFound": "Flight Not Found",
