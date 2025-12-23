@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { FavoritesButton } from "./favorites-button";
 import { RefreshButton } from "./refresh-button";
 import { useTranslation } from "@/hooks/use-translation";
+import { useEffect, useState } from "react";
 
 type FlightStatusCardProps = {
   flight: Flight;
@@ -32,21 +33,45 @@ const getStatusVariant = (status: Flight["flight_status"]) => {
 
 export function FlightStatusCard({ flight }: FlightStatusCardProps) {
   const { t } = useTranslation();
-  
+  const [formattedTimes, setFormattedTimes] = useState({
+    departure: '',
+    scheduledDeparture: '',
+    arrival: '',
+    scheduledArrival: '',
+    lastUpdated: ''
+  });
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    try {
+      const scheduledDepartureTime = parseISO(flight.departure.scheduled);
+      const estimatedDepartureTime = parseISO(flight.departure.estimated ?? flight.departure.scheduled);
+      const scheduledArrivalTime = parseISO(flight.arrival.scheduled);
+      const estimatedArrivalTime = parseISO(flight.arrival.estimated ?? flight.arrival.scheduled);
+      
+      setFormattedTimes({
+        departure: format(estimatedDepartureTime, "HH:mm"),
+        scheduledDeparture: format(scheduledDepartureTime, "HH:mm"),
+        arrival: format(estimatedArrivalTime, "HH:mm"),
+        scheduledArrival: format(scheduledArrivalTime, "HH:mm"),
+        lastUpdated: format(parseISO(flight.lastUpdated), "HH:mm:ss"),
+      });
+    } catch (error) {
+      console.error("Failed to format flight dates", error);
+    }
+  }, [flight]);
+
   const statusLabel: Record<string, string> = {
     scheduled: t('flight.statusScheduled'),
     active: t('flight.statusActive'),
     landed: t('flight.statusLanded'),
     delayed: t('flight.statusDelayed'),
     cancelled: t('flight.statusCancelled'),
+    on_time: t('flight.statusOnTime'),
   }
 
-  const scheduledDepartureTime = parseISO(flight.departure.scheduled);
-  const estimatedDepartureTime = parseISO(flight.departure.estimated ?? flight.departure.scheduled);
-
-  const scheduledArrivalTime = parseISO(flight.arrival.scheduled);
-  const estimatedArrivalTime = parseISO(flight.arrival.estimated ?? flight.arrival.scheduled);
-
+  const flightStatus = flight.flight_status || 'scheduled';
 
   return (
     <Card className="shadow-lg overflow-hidden">
@@ -59,8 +84,8 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
           <div className="flex items-center gap-2">
             <FavoritesButton flightNumber={flight.flight.iata} />
             <RefreshButton lastUpdated={flight.lastUpdated} />
-            <Badge variant={getStatusVariant(flight.flight_status)} className="text-base px-3 py-1">
-              {statusLabel[flight.flight_status] || t('flight.statusOnTime')}
+            <Badge variant={getStatusVariant(flightStatus)} className="text-base px-3 py-1">
+              {statusLabel[flightStatus] || t('flight.statusOnTime')}
             </Badge>
           </div>
         </div>
@@ -87,12 +112,12 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
                     <p className="text-sm font-medium text-muted-foreground">{t('flight.departure')}</p>
                     <p className={cn(
                         "text-2xl font-semibold",
-                        flight.flight_status === "delayed" && "text-warning-foreground bg-warning/10 rounded-md py-1"
+                        flightStatus === "delayed" && "text-warning-foreground bg-warning/10 rounded-md py-1"
                     )}>
-                        {format(estimatedDepartureTime, "HH:mm")}
+                        {isClient ? formattedTimes.departure : '...'}
                     </p>
-                    <p className={cn("text-sm", flight.flight_status === "delayed" && "line-through text-muted-foreground")}>
-                        {t('flight.scheduledTime')} {format(scheduledDepartureTime, "HH:mm")}
+                    <p className={cn("text-sm", flightStatus === "delayed" && "line-through text-muted-foreground")}>
+                        {t('flight.scheduledTime')} {isClient ? formattedTimes.scheduledDeparture : '...'}
                     </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm text-center">
@@ -114,10 +139,10 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
                  <div className="bg-muted/30 p-4 rounded-lg text-center">
                     <p className="text-sm font-medium text-muted-foreground">{t('flight.arrival')}</p>
                     <p className="text-2xl font-semibold">
-                        {format(estimatedArrivalTime, "HH:mm")}
+                        {isClient ? formattedTimes.arrival : '...'}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                        {t('flight.scheduledTime')} {format(scheduledArrivalTime, "HH:mm")}
+                        {t('flight.scheduledTime')} {isClient ? formattedTimes.scheduledArrival : '...'}
                     </p>
                 </div>
                  <div className="grid grid-cols-3 gap-2 text-sm text-center">
@@ -143,9 +168,11 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
       <CardFooter className="bg-muted/30 p-3 text-center">
         <p className="w-full text-xs text-muted-foreground flex items-center justify-center gap-1">
           <Clock className="w-3 h-3" />
-          {t('flight.lastUpdated')}: {format(parseISO(flight.lastUpdated), "HH:mm:ss")}
+          {t('flight.lastUpdated')}: {isClient ? formattedTimes.lastUpdated : '...'}
         </p>
       </CardFooter>
     </Card>
   );
 }
+
+    
