@@ -33,6 +33,12 @@ const nextConfig: NextConfig = {
         hostname: 'lh3.googleusercontent.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'studio-4944795684-cc004.firebaseapp.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
