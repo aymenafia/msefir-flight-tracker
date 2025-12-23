@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
-import { AuthManager } from "@/components/auth-manager";
 import { LanguageProvider } from "@/hooks/use-language";
+import { AuthGate } from "@/components/auth/auth-gate";
+import { AuthManager } from "@/components/auth-manager";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -30,11 +29,9 @@ export default function RootLayout({
         <LanguageProvider>
           <FirebaseClientProvider>
             <AuthManager />
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
+            <AuthGate>
+              {children}
+            </AuthGate>
             <Toaster />
           </FirebaseClientProvider>
         </LanguageProvider>

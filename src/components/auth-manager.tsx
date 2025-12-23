@@ -13,12 +13,10 @@ export function AuthManager() {
   const { user, isUserLoading } = useUser();
 
   useEffect(() => {
-    // If the initial auth check is still happening, do nothing.
-    if (isUserLoading) {
+    if (isUserLoading || !auth) {
       return;
     }
 
-    // If there is no user, initiate a non-blocking anonymous sign-in.
     if (!user) {
       initiateAnonymousSignIn(auth);
     }
