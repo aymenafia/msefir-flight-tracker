@@ -54,8 +54,7 @@ export function AirlineLogos() {
                   alt={airline.name}
                   width={airline.width}
                   height={airline.height}
-                  className="object-contain"
-                  style={{ filter: 'brightness(0.2)' }}
+                  className="object-contain dark:invert dark:brightness-200"
                 />
               </div>
             ))}
