@@ -1,9 +1,9 @@
 export const firebaseConfig = {
-  "projectId": "msefir-dae44",
-  "appId": "1:32735800904:web:8d3f7f6f2c3d5c6b9b8f7a",
-  "apiKey": "AIzaSyC_...REPLACE_WITH_YOUR_API_KEY",
-  "authDomain": "msefir-dae44.firebaseapp.com",
-  "measurementId": "G-XXXXXXXXXX",
-  "storageBucket": "msefir-dae44.appspot.com",
-  "messagingSenderId": "32735800904"
+  "projectId": "studio-4944795684-cc004",
+  "appId": "1:744938717788:web:f5e784bbab563358cbdc99",
+  "apiKey": "AIzaSyBntDZqvwDwH8vggar0w0_9cTk0w9b6H_M",
+  "authDomain": "studio-4944795684-cc004.firebaseapp.com",
+  "measurementId": "",
+  "storageBucket": "studio-4944795684-cc004.appspot.com",
+  "messagingSenderId": "744938717788"
 };
