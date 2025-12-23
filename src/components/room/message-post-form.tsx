@@ -1,6 +1,7 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useEffect, useRef } from "react";
+import { useFormStatus } from "react-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -9,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { postMessageAction } from "@/lib/actions";
-import { useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useStableUserId } from "@/hooks/use-stable-user-id";
 import { Card, CardContent } from "../ui/card";
@@ -35,7 +35,7 @@ function SubmitButton() {
 }
 
 export function MessagePostForm({ flightNumber }: MessagePostFormProps) {
-  const [state, formAction] = useFormState(postMessageAction, { message: null, errors: {} });
+  const [state, formAction] = useActionState(postMessageAction, { message: null, errors: {} });
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
   const userId = useStableUserId();
