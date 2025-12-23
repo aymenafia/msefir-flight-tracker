@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Loader2, ExternalLink } from 'lucide-react';
 import { SupportedAirlines } from '@/components/home/supported-airlines';
+import { LanguageSwitcher } from '../layout/language-switcher';
 
 // List of known user agents for restricted webviews
 const webviewUserAgents = ['FBAN', 'FBAV', 'Instagram', 'Messenger'];
@@ -52,7 +53,10 @@ export function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background p-4">
+       <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <div className="mx-auto flex w-full max-w-md flex-col items-center justify-center space-y-8">
         <div className="flex flex-col items-center space-y-2 text-center">
             <Logo className="h-12 w-12 text-primary" />
