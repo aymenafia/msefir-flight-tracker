@@ -1,3 +1,4 @@
+
 'use client';
 import type { RoomMessage } from '@/lib/types';
 import { MessageCard } from './message-card';
@@ -20,7 +21,21 @@ export function MessageFeed({ messages }: MessageFeedProps) {
     setIsLoadingSummary(true);
     setSummary(null);
     setSummaryError(null);
-    const result = await summarizeFlightUpdates(messages[0]?.flightId, messages);
+
+    // Convert Firestore Timestamps to serializable strings
+    const serializableMessages = messages.map(msg => {
+      let createdAtStr: string;
+      if (typeof msg.createdAt === 'string') {
+        createdAtStr = msg.createdAt;
+      } else if (msg.createdAt && typeof (msg.createdAt as any).toDate === 'function') {
+        createdAtStr = (msg.createdAt as any).toDate().toISOString();
+      } else {
+        createdAtStr = new Date().toISOString();
+      }
+      return { ...msg, createdAt: createdAtStr };
+    });
+
+    const result = await summarizeFlightUpdates(messages[0]?.flightId, serializableMessages);
     if (result.summary) {
       setSummary(result.summary);
     } else {
