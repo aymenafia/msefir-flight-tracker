@@ -6,11 +6,12 @@ import {
   Clock,
   Info,
   HelpCircle,
-  ThumbsUp,
   Icon,
+  Sparkles,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { HelpfulButton } from "./helpful-button";
+import { cn } from "@/lib/utils";
 
 type MessageCardProps = {
   message: RoomMessage;
@@ -25,22 +26,25 @@ const messageTypeIcons: { [key in RoomMessage["type"]]: Icon } = {
 };
 
 export function MessageCard({ message }: MessageCardProps) {
-  const IconComponent = messageTypeIcons[message.type];
   const isAIMessage = message.userId === "msefir AI";
+  const IconComponent = isAIMessage ? Sparkles : messageTypeIcons[message.type];
 
   return (
-    <Card className="shadow-sm">
+    <Card className={cn(
+      "shadow-sm",
+      isAIMessage && "bg-primary/5 border-primary/20"
+    )}>
       <CardHeader className="flex flex-row items-center justify-between p-4">
         <div className="flex items-center gap-3">
-          <IconComponent className="w-5 h-5 text-primary" />
-          <span className="font-semibold text-primary">{message.userId}</span>
+          <IconComponent className={cn("w-5 h-5 text-primary", isAIMessage && "text-accent")} />
+          <span className={cn("font-semibold text-primary", isAIMessage && "text-accent-foreground")}>{message.userId}</span>
         </div>
         <time className="text-xs text-muted-foreground">
           {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
         </time>
       </CardHeader>
       <CardContent className="px-4 pb-4">
-        <p className="text-foreground">{message.text}</p>
+        <p className={cn("text-foreground", isAIMessage && "italic")}>{message.text}</p>
       </CardContent>
       {!isAIMessage && (
         <CardFooter className="p-4 pt-0 flex justify-end">

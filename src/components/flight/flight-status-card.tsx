@@ -38,7 +38,7 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
           </div>
           <div className="flex items-center gap-2">
             <FavoritesButton flightNumber={flight.flightNumber} />
-            <RefreshButton />
+            <RefreshButton lastUpdated={flight.lastUpdated} />
             <Badge variant={getStatusVariant(flight.status)} className="text-base px-3 py-1">
               {flight.status}
             </Badge>
