@@ -1,0 +1,16 @@
+{
+    "home": {
+        "title": "Track Your Flight Status",
+        "subtitle": "msefir — Track your flight without stress",
+        "findFlight": "Find Your Flight",
+        "myFlights": "My Flights"
+    },
+    "footer": {
+        "tagline": "msefir — Track your flight with ease",
+        "rights": "All rights reserved."
+    },
+    "auth": {
+        "signIn": "Sign In",
+        "signOut": "Log out"
+    }
+}

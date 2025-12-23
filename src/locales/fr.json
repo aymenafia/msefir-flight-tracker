@@ -1,0 +1,16 @@
+{
+    "home": {
+        "title": "Suivez le statut de votre vol",
+        "subtitle": "msefir — Suivez votre vol sans stress",
+        "findFlight": "Trouvez votre vol",
+        "myFlights": "Mes vols"
+    },
+    "footer": {
+        "tagline": "msefir — Suivez votre vol sans stress",
+        "rights": "Tous droits réservés."
+    },
+    "auth": {
+        "signIn": "Se connecter",
+        "signOut": "Se déconnecter"
+    }
+}

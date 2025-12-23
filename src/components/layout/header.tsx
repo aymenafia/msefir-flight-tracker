@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/icons/logo";
 import { AuthButton } from "../auth/auth-button";
+import { LanguageSwitcher } from "./language-switcher";
 
 export function Header() {
   return (
@@ -12,7 +13,10 @@ export function Header() {
             msefir
           </span>
         </Link>
-        <AuthButton />
+        <div className="flex items-center gap-4">
+          <LanguageSwitcher />
+          <AuthButton />
+        </div>
       </div>
     </header>
   );
