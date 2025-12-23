@@ -1,3 +1,4 @@
+
 'use client';
 import { useMemo } from 'react';
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -8,6 +9,7 @@ import { MessageFeed } from "./message-feed";
 import { MessagePostForm } from "./message-post-form";
 import { Users } from "lucide-react";
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from '@/hooks/use-translation';
 
 type FlightRoomProps = {
   room: FlightRoomType;
@@ -16,6 +18,7 @@ type FlightRoomProps = {
 
 export function FlightRoom({ room, flightId }: FlightRoomProps) {
   const firestore = useFirestore();
+  const { t } = useTranslation();
 
   const messagesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -36,7 +39,7 @@ export function FlightRoom({ room, flightId }: FlightRoomProps) {
   return (
     <section>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold tracking-tight">Flight Room</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">{t('room.title')}</h2>
         <div className="flex items-center gap-4">
           {roomStatus === 'OPEN' && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -47,7 +50,7 @@ export function FlightRoom({ room, flightId }: FlightRoomProps) {
           <span className={`px-3 py-1 text-sm font-semibold rounded-full ${
               roomStatus === 'OPEN' ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive'
           }`}>
-            {roomStatus}
+            {roomStatus === 'OPEN' ? t('room.statusOpen') : t('room.statusClosed')}
           </span>
         </div>
       </div>
@@ -59,7 +62,7 @@ export function FlightRoom({ room, flightId }: FlightRoomProps) {
         </div>
       ) : (
         <div className="text-center py-10 border border-dashed rounded-lg">
-            <p className="text-muted-foreground">This flight room is closed.</p>
+            <p className="text-muted-foreground">{t('room.roomClosed')}</p>
         </div>
       )}
     </section>

@@ -12,10 +12,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useTranslation } from '@/hooks/use-translation';
 
 export function AuthButton() {
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
+  const { t } = useTranslation();
 
   const handleSignIn = () => {
     initiateGoogleSignIn(auth);
@@ -26,14 +28,14 @@ export function AuthButton() {
   };
 
   if (isUserLoading) {
-    return <Button variant="outline" size="sm" disabled>Loading...</Button>;
+    return <Button variant="outline" size="sm" disabled>{t('auth.loading')}</Button>;
   }
 
   if (!user || user.isAnonymous) {
     return (
       <Button variant="outline" size="sm" onClick={handleSignIn}>
         <LogIn className="mr-2 h-4 w-4" />
-        Sign In
+        {t('auth.signIn')}
       </Button>
     );
   }
@@ -51,7 +53,7 @@ export function AuthButton() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>{t('auth.signOut')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

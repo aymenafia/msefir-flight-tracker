@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useTransition } from "react";
@@ -7,6 +8,7 @@ import { ThumbsUp } from "lucide-react";
 import { incrementHelpfulCount } from "@/lib/firestore-mutations";
 import { cn } from "@/lib/utils";
 import { useFirestore } from "@/firebase";
+import { useTranslation } from "@/hooks/use-translation";
 
 type HelpfulButtonProps = {
   message: RoomMessage;
@@ -16,6 +18,7 @@ export function HelpfulButton({ message }: HelpfulButtonProps) {
   const [isPending, startTransition] = useTransition();
   const [wasClicked, setWasClicked] = useState(false);
   const firestore = useFirestore();
+  const { t } = useTranslation();
 
   const handleClick = () => {
     if (wasClicked || isPending || !firestore) return;
@@ -36,7 +39,7 @@ export function HelpfulButton({ message }: HelpfulButtonProps) {
       className={cn("text-muted-foreground", wasClicked && "text-accent-foreground bg-accent/20")}
     >
       <ThumbsUp className="w-4 h-4 mr-2" />
-      Helpful
+      {t('room.helpful')}
       <span className="ml-2 bg-muted px-2 py-0.5 rounded-full text-xs">
         {currentCount + (wasClicked ? 1 : 0)}
       </span>

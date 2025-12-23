@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -7,11 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function FlightSearch() {
   const [flightNumber, setFlightNumber] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,10 +22,9 @@ export function FlightSearch() {
 
     const trimmedFlightNumber = flightNumber.trim().toUpperCase();
     
-    // Basic validation: 2 letters for airline, 1-4 digits for number
     const pattern = /^[A-Z]{2}\d{1,4}$/;
     if (!pattern.test(trimmedFlightNumber.replace(/\s+/g, ''))) {
-      setError("Invalid flight number. Use format like TU723 or AT 550.");
+      setError(t('flight.searchError'));
       return;
     }
 
@@ -33,17 +35,17 @@ export function FlightSearch() {
   return (
     <Card className="shadow-lg">
       <CardHeader>
-        <CardTitle>Flight Number</CardTitle>
-        <CardDescription>e.g., TU723, AH1002, AT550</CardDescription>
+        <CardTitle>{t('flight.searchTitle')}</CardTitle>
+        <CardDescription>{t('flight.searchDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSearch} className="flex flex-col gap-4">
           <Input
             value={flightNumber}
             onChange={(e) => setFlightNumber(e.target.value)}
-            placeholder="Enter flight number"
+            placeholder={t('flight.searchPlaceholder')}
             className="text-lg h-12"
-            aria-label="Flight Number"
+            aria-label={t('flight.searchTitle')}
           />
           {error && (
             <Alert variant="destructive" className="mt-2">
@@ -52,7 +54,7 @@ export function FlightSearch() {
             </Alert>
           )}
           <Button type="submit" size="lg" className="w-full text-lg">
-            Search Flight
+            {t('flight.searchButton')}
           </Button>
         </form>
       </CardContent>

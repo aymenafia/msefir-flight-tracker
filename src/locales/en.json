@@ -1,3 +1,4 @@
+
 {
     "home": {
         "title": "Track Your Flight Status",
@@ -11,6 +12,67 @@
     },
     "auth": {
         "signIn": "Sign In",
-        "signOut": "Log out"
+        "signOut": "Log out",
+        "loading": "Loading...",
+        "signInWithGoogle": "Sign in with Google"
+    },
+    "flight": {
+        "notFound": "Flight Not Found",
+        "notFoundMessage": "We couldn't find the flight you were looking for. Please check the flight number and try again.",
+        "backToHome": "Back to Home",
+        "searchTitle": "Flight Number",
+        "searchDescription": "e.g., TU723, AH1002, AT550",
+        "searchPlaceholder": "Enter flight number",
+        "searchButton": "Search Flight",
+        "searchError": "Invalid flight number. Use format like TU723 or AT 550.",
+        "statusScheduled": "Scheduled",
+        "statusActive": "Active",
+        "statusLanded": "Landed",
+        "statusDelayed": "Delayed",
+        "statusCancelled": "Cancelled",
+        "statusOnTime": "On Time",
+        "departure": "Departure",
+        "arrival": "Arrival",
+        "scheduledTime": "Scheduled",
+        "terminal": "Terminal",
+        "gate": "Gate",
+        "baggage": "Baggage",
+        "lastUpdated": "Last updated",
+        "refreshStatus": "Refresh status",
+        "statusUpToDate": "Status is up-to-date",
+        "alreadyUpToDate": "Already up-to-date",
+        "alreadyUpToDateDesc": "Flight data was recently updated. You can refresh again in a few minutes.",
+        "refreshing": "Refreshing flight status...",
+        "refreshingDesc": "Please wait a moment."
+    },
+    "favorites": {
+        "add": "Add to favorites",
+        "remove": "Remove from favorites",
+        "noFavorites": "No favorite flights",
+        "noFavoritesDesc": "Star a flight to track it here."
+    },
+    "room": {
+        "title": "Flight Room",
+        "statusOpen": "OPEN",
+        "statusClosed": "CLOSED",
+        "roomClosed": "This flight room is closed.",
+        "postPlaceholder": "Share a helpful update...",
+        "postButton": "Post Update",
+        "signInToPost": "Sign in to join the conversation.",
+        "postSuccess": "Success!",
+        "postSuccessDesc": "Your message has been posted.",
+        "noMessages": "No updates yet. Be the first to post!",
+        "helpful": "Helpful",
+        "pending": "pending...",
+        "justNow": "just now",
+        "messageTypeInfo": "Info",
+        "messageTypeGate": "Gate",
+        "messageTypeBoarding": "Boarding",
+        "messageTypeDelay": "Delay",
+        "messageTypeQuestion": "Question"
+    },
+    "page": {
+        "notFound": "Page Not Found",
+        "notFoundMessage": "The page you are looking for does not exist or has been moved."
     }
 }

@@ -1,3 +1,4 @@
+
 {
     "home": {
         "title": "Suivez le statut de votre vol",
@@ -11,6 +12,67 @@
     },
     "auth": {
         "signIn": "Se connecter",
-        "signOut": "Se déconnecter"
+        "signOut": "Se déconnecter",
+        "loading": "Chargement...",
+        "signInWithGoogle": "Se connecter avec Google"
+    },
+    "flight": {
+        "notFound": "Vol non trouvé",
+        "notFoundMessage": "Nous n'avons pas pu trouver le vol que vous cherchiez. Veuillez vérifier le numéro de vol et réessayer.",
+        "backToHome": "Retour à l'accueil",
+        "searchTitle": "Numéro de vol",
+        "searchDescription": "ex: TU723, AH1002, AT550",
+        "searchPlaceholder": "Entrez le numéro de vol",
+        "searchButton": "Rechercher un vol",
+        "searchError": "Numéro de vol invalide. Utilisez un format comme TU723 ou AT 550.",
+        "statusScheduled": "Prévu",
+        "statusActive": "En cours",
+        "statusLanded": "Atterri",
+        "statusDelayed": "Retardé",
+        "statusCancelled": "Annulé",
+        "statusOnTime": "À l'heure",
+        "departure": "Départ",
+        "arrival": "Arrivée",
+        "scheduledTime": "Prévu",
+        "terminal": "Terminal",
+        "gate": "Porte",
+        "baggage": "Bagages",
+        "lastUpdated": "Dernière mise à jour",
+        "refreshStatus": "Actualiser le statut",
+        "statusUpToDate": "Le statut est à jour",
+        "alreadyUpToDate": "Déjà à jour",
+        "alreadyUpToDateDesc": "Les données du vol ont été récemment mises à jour. Vous pourrez actualiser dans quelques minutes.",
+        "refreshing": "Actualisation du statut du vol...",
+        "refreshingDesc": "Veuillez patienter un instant."
+    },
+    "favorites": {
+        "add": "Ajouter aux favoris",
+        "remove": "Retirer des favoris",
+        "noFavorites": "Aucun vol favori",
+        "noFavoritesDesc": "Mettez un vol en favori pour le suivre ici."
+    },
+    "room": {
+        "title": "Salle de vol",
+        "statusOpen": "OUVERTE",
+        "statusClosed": "FERMÉE",
+        "roomClosed": "Cette salle de vol est fermée.",
+        "postPlaceholder": "Partagez une mise à jour utile...",
+        "postButton": "Publier",
+        "signInToPost": "Connectez-vous pour participer à la conversation.",
+        "postSuccess": "Succès !",
+        "postSuccessDesc": "Votre message a été publié.",
+        "noMessages": "Aucune mise à jour pour le moment. Soyez le premier à publier !",
+        "helpful": "Utile",
+        "pending": "en attente...",
+        "justNow": "à l'instant",
+        "messageTypeInfo": "Info",
+        "messageTypeGate": "Porte",
+        "messageTypeBoarding": "Embarquement",
+        "messageTypeDelay": "Retard",
+        "messageTypeQuestion": "Question"
+    },
+    "page": {
+        "notFound": "Page non trouvée",
+        "notFoundMessage": "La page que vous recherchez n'existe pas ou a été déplacée."
     }
 }

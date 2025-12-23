@@ -1,4 +1,5 @@
 
+'use client';
 import type { RoomMessage } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,6 +17,7 @@ import { formatDistanceToNow } from "date-fns";
 import { HelpfulButton } from "./helpful-button";
 import { UnhelpfulButton } from "./unhelpful-button";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/hooks/use-translation";
 
 type MessageCardProps = {
   message: RoomMessage;
@@ -30,22 +32,22 @@ const messageTypeIcons: { [key in RoomMessage["type"]]: Icon } = {
 };
 
 export function MessageCard({ message }: MessageCardProps) {
+  const { t } = useTranslation();
   const isAIMessage = message.userId === "msefir AI";
   const IconComponent = isAIMessage ? Sparkles : messageTypeIcons[message.type];
 
   const renderTimestamp = () => {
     if (!message.createdAt) {
-      return "pending...";
+      return t('room.pending');
     }
     try {
       const date = new Date(message.createdAt);
-      // Check if the date is valid
       if (isNaN(date.getTime())) {
-        return "just now";
+        return t('room.justNow');
       }
       return formatDistanceToNow(date, { addSuffix: true });
     } catch (error) {
-      return "just now";
+      return t('room.justNow');
     }
   };
 

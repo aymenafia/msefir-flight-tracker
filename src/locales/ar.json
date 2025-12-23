@@ -1,3 +1,4 @@
+
 {
     "home": {
         "title": "تتبع حالة رحلتك",
@@ -11,6 +12,67 @@
     },
     "auth": {
         "signIn": "تسجيل الدخول",
-        "signOut": "تسجيل الخروج"
+        "signOut": "تسجيل الخروج",
+        "loading": "جار التحميل...",
+        "signInWithGoogle": "تسجيل الدخول باستخدام جوجل"
+    },
+    "flight": {
+        "notFound": "لم يتم العثور على الرحلة",
+        "notFoundMessage": "لم نتمكن من العثور على الرحلة التي تبحث عنها. يرجى التحقق من رقم الرحلة والمحاولة مرة أخرى.",
+        "backToHome": "العودة إلى الرئيسية",
+        "searchTitle": "رقم الرحلة",
+        "searchDescription": "مثال: TU723, AH1002, AT550",
+        "searchPlaceholder": "أدخل رقم الرحلة",
+        "searchButton": "ابحث عن رحلة",
+        "searchError": "رقم الرحلة غير صالح. استخدم تنسيقًا مثل TU723 أو AT 550.",
+        "statusScheduled": "مجدولة",
+        "statusActive": "نشطة",
+        "statusLanded": "هبطت",
+        "statusDelayed": "مؤجلة",
+        "statusCancelled": "ملغاة",
+        "statusOnTime": "في الوقت المحدد",
+        "departure": "المغادرة",
+        "arrival": "الوصول",
+        "scheduledTime": "مجدول",
+        "terminal": "المبنى",
+        "gate": "البوابة",
+        "baggage": "الأمتعة",
+        "lastUpdated": "آخر تحديث",
+        "refreshStatus": "تحديث الحالة",
+        "statusUpToDate": "الحالة محدثة",
+        "alreadyUpToDate": "محدثة بالفعل",
+        "alreadyUpToDateDesc": "تم تحديث بيانات الرحلة مؤخرًا. يمكنك التحديث مرة أخرى في غضون دقائق قليلة.",
+        "refreshing": "جاري تحديث حالة الرحلة...",
+        "refreshingDesc": "يرجى الانتظار لحظة."
+    },
+    "favorites": {
+        "add": "إضافة إلى المفضلة",
+        "remove": "إزالة من المفضلة",
+        "noFavorites": "لا توجد رحلات مفضلة",
+        "noFavoritesDesc": "أضف رحلة إلى المفضلة لتتبعها هنا."
+    },
+    "room": {
+        "title": "غرفة الرحلة",
+        "statusOpen": "مفتوحة",
+        "statusClosed": "مغلقة",
+        "roomClosed": "غرفة الرحلة هذه مغلقة.",
+        "postPlaceholder": "شارك تحديثًا مفيدًا...",
+        "postButton": "نشر التحديث",
+        "signInToPost": "سجل الدخول للانضمام إلى المحادثة.",
+        "postSuccess": "نجاح!",
+        "postSuccessDesc": "تم نشر رسالتك.",
+        "noMessages": "لا توجد تحديثات حتى الآن. كن أول من ينشر!",
+        "helpful": "مفيد",
+        "pending": "قيد الانتظار...",
+        "justNow": "الآن",
+        "messageTypeInfo": "معلومات",
+        "messageTypeGate": "بوابة",
+        "messageTypeBoarding": "صعود",
+        "messageTypeDelay": "تأخير",
+        "messageTypeQuestion": "سؤال"
+    },
+    "page": {
+        "notFound": "الصفحة غير موجودة",
+        "notFoundMessage": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها."
     }
 }

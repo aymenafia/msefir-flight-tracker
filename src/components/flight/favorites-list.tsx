@@ -1,12 +1,15 @@
+
 "use client";
 
 import { useFavorites } from "@/hooks/use-favorites";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { Star, Plane } from "lucide-react";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function FavoritesList() {
   const { favorites, isLoaded } = useFavorites();
+  const { t } = useTranslation();
 
   if (!isLoaded) {
     return null;
@@ -19,9 +22,9 @@ export function FavoritesList() {
           <div className="flex justify-center items-center w-12 h-12 rounded-full bg-secondary mb-4">
             <Star className="w-6 h-6 text-secondary-foreground" />
           </div>
-          <h3 className="font-semibold">No favorite flights</h3>
+          <h3 className="font-semibold">{t('favorites.noFavorites')}</h3>
           <p className="text-sm text-muted-foreground mt-1">
-            Star a flight to track it here.
+            {t('favorites.noFavoritesDesc')}
           </p>
         </CardContent>
       </Card>

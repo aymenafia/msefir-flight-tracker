@@ -6,12 +6,14 @@ import { Info, Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { useTranslation } from '@/hooks/use-translation';
 
 type MessageFeedProps = {
   messages: RoomMessage[];
 };
 
 export function MessageFeed({ messages }: MessageFeedProps) {
+  const { t } = useTranslation();
 
   return (
     <div>
@@ -19,7 +21,7 @@ export function MessageFeed({ messages }: MessageFeedProps) {
         <div className="text-center py-10 border border-dashed rounded-lg">
           <Info className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
           <p className="text-muted-foreground">
-            No updates yet. Be the first to post!
+            {t('room.noMessages')}
           </p>
         </div>
       ) : (

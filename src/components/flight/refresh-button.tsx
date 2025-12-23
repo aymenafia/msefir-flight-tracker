@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { differenceInMinutes, parseISO } from "date-fns";
+import { useTranslation } from "@/hooks/use-translation";
 
 type RefreshButtonProps = {
   lastUpdated: string;
@@ -16,6 +18,7 @@ export function RefreshButton({ lastUpdated }: RefreshButtonProps) {
   const router = useRouter();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const canRefresh = useMemo(() => {
     const lastUpdatedDate = parseISO(lastUpdated);
@@ -23,14 +26,11 @@ export function RefreshButton({ lastUpdated }: RefreshButtonProps) {
     return minutesSinceUpdate >= 10;
   }, [lastUpdated]);
 
-  // If the page re-renders (e.g. after router.refresh()) and the button
-  // was in a refreshing state, this ensures it resets visually.
   useEffect(() => {
     if (isRefreshing) {
       setIsRefreshing(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastUpdated]);
+  }, [lastUpdated, isRefreshing]);
 
 
   const handleRefresh = () => {
@@ -38,16 +38,16 @@ export function RefreshButton({ lastUpdated }: RefreshButtonProps) {
 
     if (!canRefresh) {
         toast({
-            title: "Already up-to-date",
-            description: "Flight data was recently updated. You can refresh again in a few minutes.",
+            title: t('flight.alreadyUpToDate'),
+            description: t('flight.alreadyUpToDateDesc'),
         });
         return;
     }
 
     setIsRefreshing(true);
     toast({
-        title: "Refreshing flight status...",
-        description: "Please wait a moment.",
+        title: t('flight.refreshing'),
+        description: t('flight.refreshingDesc'),
     });
     router.refresh();
   };
@@ -61,7 +61,7 @@ export function RefreshButton({ lastUpdated }: RefreshButtonProps) {
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{canRefresh ? "Refresh status" : "Status is up-to-date"}</p>
+          <p>{canRefresh ? t('flight.refreshStatus') : t('flight.statusUpToDate')}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

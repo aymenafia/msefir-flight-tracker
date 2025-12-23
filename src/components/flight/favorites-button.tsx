@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Star } from "lucide-react";
@@ -5,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useFavorites } from "@/hooks/use-favorites";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTranslation } from "@/hooks/use-translation";
 
 type FavoritesButtonProps = {
   flightNumber: string;
@@ -13,6 +15,7 @@ type FavoritesButtonProps = {
 export function FavoritesButton({ flightNumber }: FavoritesButtonProps) {
   const { isFavorite, addFavorite, removeFavorite, isLoaded } = useFavorites();
   const isFav = isFavorite(flightNumber);
+  const { t } = useTranslation();
 
   const toggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -38,7 +41,7 @@ export function FavoritesButton({ flightNumber }: FavoritesButtonProps) {
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{isFav ? "Remove from favorites" : "Add to favorites"}</p>
+          <p>{isFav ? t('favorites.remove') : t('favorites.add')}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
