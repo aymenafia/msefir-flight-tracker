@@ -43,12 +43,27 @@ service cloud.firestore {
     function hasCorrectFlightId(flightId) {
       return request.resource.data.flightId == flightId;
     }
+    
+    /**
+     * On message update, validates that only the `helpfulCount` is being incremented.
+     */
+    function isIncrementingHelpfulCount() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['helpfulCount'])
+          && request.resource.data.helpfulCount == resource.data.helpfulCount + 1;
+    }
 
     /**
      * Combines all checks required for a user to create a new message.
      */
     function canCreateMessage(flightId) {
       return isSignedIn() && isMessageCreator() && hasCorrectFlightId(flightId);
+    }
+    
+    /**
+     * Combines all checks required for a user to update a message.
+     */
+    function canUpdateMessage() {
+      return isSignedIn() && isIncrementingHelpfulCount();
     }
 
 
@@ -97,7 +112,7 @@ service cloud.firestore {
         allow get: if true;
         allow list: if true;
         allow create: if canCreateMessage(flightId);
-        allow update: if false;
+        allow update: if canUpdateMessage();
         allow delete: if false;
       }
     }
