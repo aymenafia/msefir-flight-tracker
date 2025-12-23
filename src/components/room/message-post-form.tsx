@@ -46,7 +46,7 @@ export function MessagePostForm({ flightNumber }: MessagePostFormProps) {
         return;
     }
     
-    await postMessage(firestore, flightNumber, { ...data, userId: user.uid });
+    postMessage(firestore, flightNumber, { ...data, userId: user.uid });
     
     reset();
     toast({
@@ -103,7 +103,7 @@ export function MessagePostForm({ flightNumber }: MessagePostFormProps) {
                                     <FormControl>
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Select type" />
-                                    </Trigger>
+                                    </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
                                     <SelectItem value="info">Info</SelectItem>
