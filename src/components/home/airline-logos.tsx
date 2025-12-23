@@ -7,7 +7,7 @@ const airlines = [
   { name: 'Air Algérie', logo: '/images/airlines/Air_Algérie_Logo.png' },
   { name: 'Tunisair', logo: '/images/airlines/TunisAir_Logo.png' },
   { name: 'Nouvelair', logo: '/images/airlines/Nouvelair_Logo.png' },
-  { name: 'Air Arabia Maroc', logo: '/images/airlines/air-arabia-maroc.png' },
+  { name: 'Air Arabia Maroc', logo: '/images/airlines/Air_Arabia_Logo.png' },
 ];
 
 export function AirlineLogos() {
