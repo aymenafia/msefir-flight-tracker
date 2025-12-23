@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'upload.wikimedia.org',
+        hostname: 'lh3.googleusercontent.com',
         port: '',
         pathname: '/**',
       }
