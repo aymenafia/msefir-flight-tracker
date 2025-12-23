@@ -65,7 +65,7 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
                 <p className="text-sm font-medium text-muted-foreground">Departure</p>
                 <p className={cn(
                     "text-2xl font-semibold",
-                    flight.status === "Delayed" && "text-warning"
+                    flight.status === "Delayed" && "text-warning-foreground bg-warning/10 rounded-md py-1"
                 )}>
                     {format(estimatedDepartureTime, "HH:mm")}
                 </p>
