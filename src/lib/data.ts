@@ -1,14 +1,10 @@
 import { generateHelpfulRoomStarter } from "@/ai/flows/helpful-room-starter";
 import type { Flight, FlightRoom, RoomMessage } from "./types";
-import { add, sub, formatISO, isBefore } from "date-fns";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
-import { initializeFirebase } from "@/firebase";
+import { add, formatISO, isBefore, parseISO } from "date-fns";
+import { firestoreAdmin } from "./firebase-admin";
 
-// Initialize Firebase
-const { firestore } = initializeFirebase();
 const flightsCollection = "flights";
-
-let mockMessages: RoomMessage[] = []; // We will fetch messages from Firestore
+const roomsCollection = "rooms";
 
 async function fetchFlightFromAPI(flightIata: string) {
   const airlineIata = flightIata.slice(0, 2);
@@ -17,7 +13,7 @@ async function fetchFlightFromAPI(flightIata: string) {
   const url = `http://api.aviationstack.com/v1/flights?access_key=${process.env.AVIATIONSTACK_API_KEY}&airline_iata=${airlineIata}&flight_number=${flightNumber}`;
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { cache: 'no-store' });
     if (!response.ok) {
       throw new Error(`AviationStack API error: ${response.statusText}`);
     }
@@ -27,7 +23,6 @@ async function fetchFlightFromAPI(flightIata: string) {
     }
     const flightData = data.data[0];
 
-    // Normalize the response
     const normalized: Flight = {
       airline: {
         name: flightData.airline.name,
@@ -74,21 +69,21 @@ export const getFlightByNumber = async (
   const upperCaseFlightNumber = flightNumber.toUpperCase();
   const now = new Date();
 
-  const flightDocRef = doc(firestore, flightsCollection, upperCaseFlightNumber);
+  const flightDocRef = firestoreAdmin.collection(flightsCollection).doc(upperCaseFlightNumber);
 
   try {
-    const flightDoc = await getDoc(flightDocRef);
+    const flightDoc = await flightDocRef.get();
 
-    if (flightDoc.exists()) {
+    if (flightDoc.exists) {
       const cachedFlight = flightDoc.data() as Flight;
-      const cacheTime = parseISO(cachedFlight.lastUpdated);
-      const cacheExpiry = add(cacheTime, { minutes: 15 });
-
-      if (isBefore(now, cacheExpiry)) {
-        console.log(`Returning cached data for ${upperCaseFlightNumber}`);
-        // For now, we will continue with mock messages
-        const room = await getOrCreateRoom(upperCaseFlightNumber);
-        return { flight: cachedFlight, room };
+      if (cachedFlight.lastUpdated) {
+          const cacheTime = parseISO(cachedFlight.lastUpdated);
+          const cacheExpiry = add(cacheTime, { minutes: 15 });
+          if (isBefore(now, cacheExpiry)) {
+            console.log(`Returning cached data for ${upperCaseFlightNumber}`);
+            const room = await getOrCreateRoom(upperCaseFlightNumber);
+            return { flight: cachedFlight, room };
+          }
       }
     }
 
@@ -99,7 +94,7 @@ export const getFlightByNumber = async (
       return null;
     }
 
-    await setDoc(flightDocRef, flight);
+    await flightDocRef.set(flight);
 
     const room = await getOrCreateRoom(upperCaseFlightNumber);
 
@@ -107,63 +102,45 @@ export const getFlightByNumber = async (
 
   } catch (error) {
     console.error(`Error fetching flight ${upperCaseFlightNumber}:`, error);
+    // In case of API/DB error, don't crash the page.
+    // Consider returning a specific error state to the UI.
     return null;
   }
 };
 
 const getOrCreateRoom = async (flightNumber: string): Promise<FlightRoom> => {
-    // In a real app, this would check firestore for a room and its messages
-    let flightMessages = mockMessages.filter(
-        (m) => m.flightNumber === flightNumber
-    );
+    const roomDocRef = firestoreAdmin.collection(roomsCollection).doc(flightNumber);
+    const messagesColRef = roomDocRef.collection('messages');
+
+    const messagesSnapshot = await messagesColRef.orderBy('createdAt', 'desc').get();
+    let flightMessages: RoomMessage[] = messagesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as RoomMessage));
 
     if (flightMessages.length === 0) {
         try {
             const starter = await generateHelpfulRoomStarter({ flightNumber });
-            const aiMessage: RoomMessage = {
-                id: 'ai-starter',
+            const aiMessage: Omit<RoomMessage, 'id'> = {
                 flightNumber: flightNumber,
                 type: 'info',
                 text: starter.message,
                 userId: 'msefir AI',
-                createdAt: new Date().toISOString(),
+                createdAt: formatISO(new Date()),
                 helpfulCount: 0,
             };
-            flightMessages.push(aiMessage);
-            mockMessages.push(aiMessage);
+            const addedDoc = await messagesColRef.add(aiMessage);
+            flightMessages.push({ id: addedDoc.id, ...aiMessage });
         } catch (error) {
             console.error("AI starter message generation failed:", error);
+            // Don't block room creation if AI fails
         }
     }
 
+    // In a real app, passenger count would come from a real-time source.
+    const activePassengers = Math.floor(Math.random() * (150 - 20 + 1)) + 20;
+
     return {
         flightNumber: flightNumber,
-        status: "OPEN",
-        activePassengers: Math.floor(Math.random() * (150 - 20 + 1)) + 20,
-        messages: flightMessages.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+        status: "OPEN", // Logic for OPEN/CLOSED to be implemented
+        activePassengers: activePassengers,
+        messages: flightMessages,
     };
-}
-
-
-export const addMessageToFlight = (flightNumber: string, message: Omit<RoomMessage, 'id' | 'flightNumber' | 'helpfulCount' | 'createdAt'>): RoomMessage => {
-  const newMessage: RoomMessage = {
-    ...message,
-    id: `msg${Date.now()}`,
-    flightNumber,
-    createdAt: formatISO(new Date()),
-    helpfulCount: 0,
-  };
-  mockMessages.unshift(newMessage);
-  
-  // In a real app, this would invalidate a cache, here we just add to the mock array
-  
-  return newMessage;
-};
-
-export const incrementHelpfulCount = (messageId: string): RoomMessage | undefined => {
-  const message = mockMessages.find(m => m.id === messageId);
-  if (message) {
-    message.helpfulCount++;
-  }
-  return message;
 }

@@ -2,9 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { addMessageToFlight, incrementHelpfulCount } from "./data";
 import { MessageType } from "./types";
-import { summarizeFlightUpdates as summarizeFlightUpdatesAI } from "@/ai/flows/summarize-flight-updates";
+import { firestoreAdmin, admin } from "./firebase-admin";
+import { formatISO } from "date-fns";
+import type { RoomMessage } from "./types";
 
 const messageSchema = z.object({
   flightNumber: z.string(),
@@ -29,30 +30,38 @@ export async function postMessageAction(prevState: any, formData: FormData) {
   }
   
   try {
-    addMessageToFlight(validatedFields.data.flightNumber, {
-        text: validatedFields.data.message,
-        type: validatedFields.data.type as MessageType,
-        userId: validatedFields.data.userId,
-    });
-    revalidatePath(`/flight/${validatedFields.data.flightNumber}`);
+    const { flightNumber, message, type, userId } = validatedFields.data;
+    const newMessage: Omit<RoomMessage, 'id'> = {
+        text: message,
+        type: type as MessageType,
+        userId: userId,
+        flightNumber,
+        createdAt: formatISO(new Date()),
+        helpfulCount: 0,
+    };
+    await firestoreAdmin.collection(`rooms/${flightNumber}/messages`).add(newMessage);
+    revalidatePath(`/flight/${flightNumber}`);
     return { message: "Message posted successfully.", errors: {} };
   } catch (error) {
+    console.error("Failed to post message:", error);
     return { message: "Failed to post message.", errors: {} };
   }
 }
 
-
 export async function incrementHelpfulAction(messageId: string, flightNumber: string) {
     try {
-        incrementHelpfulCount(messageId);
+        const messageRef = firestoreAdmin.doc(`rooms/${flightNumber}/messages/${messageId}`);
+        await messageRef.update({
+            helpfulCount: admin.firestore.FieldValue.increment(1)
+        });
         revalidatePath(`/flight/${flightNumber}`);
     } catch (error) {
         console.error("Failed to increment helpful count:", error);
-        // Optionally, return an error to be handled by the client
     }
 }
 
 export async function summarizeFlightUpdates(flightNumber: string, messages: any[]) {
+  const { summarizeFlightUpdates: summarizeFlightUpdatesAI } = await import("@/ai/flows/summarize-flight-updates");
   try {
     const summary = await summarizeFlightUpdatesAI({ messages });
     return { summary: summary.summary, error: null };
