@@ -1,0 +1,217 @@
+{
+  "entities": {
+    "Flight": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Flight",
+      "type": "object",
+      "description": "Represents a flight with its details and current status.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Flight entity. Constructed from airline IATA and flight number (e.g., TU723)."
+        },
+        "airlineIata": {
+          "type": "string",
+          "description": "The IATA code of the airline operating the flight (e.g., TU)."
+        },
+        "flightNumber": {
+          "type": "string",
+          "description": "The flight number (e.g., 723)."
+        },
+        "departureAirportIata": {
+          "type": "string",
+          "description": "The IATA code of the departure airport (e.g., TUN)."
+        },
+        "arrivalAirportIata": {
+          "type": "string",
+          "description": "The IATA code of the arrival airport (e.g., CDG)."
+        },
+        "scheduledTime": {
+          "type": "string",
+          "description": "The scheduled departure time of the flight in ISO 8601 format.",
+          "format": "date-time"
+        },
+        "estimatedTime": {
+          "type": "string",
+          "description": "The estimated departure time of the flight in ISO 8601 format.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the flight (e.g., On Time, Delayed, Cancelled)."
+        },
+        "lastUpdated": {
+          "type": "string",
+          "description": "Timestamp of the last time the flight status was updated in ISO 8601 format.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "airlineIata",
+        "flightNumber",
+        "departureAirportIata",
+        "arrivalAirportIata",
+        "scheduledTime",
+        "estimatedTime",
+        "status",
+        "lastUpdated"
+      ]
+    },
+    "Room": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Room",
+      "type": "object",
+      "description": "Represents a temporary community room associated with a specific flight.",
+      "properties": {
+        "flightId": {
+          "type": "string",
+          "description": "Reference to Flight. Unique identifier for the Flight entity this room is associated with."
+        },
+        "depTime": {
+          "type": "string",
+          "description": "Scheduled departure time of the flight, used to determine room open/close times.",
+          "format": "date-time"
+        },
+        "arrTime": {
+          "type": "string",
+          "description": "Scheduled arrival time of the flight, used to determine room open/close times.",
+          "format": "date-time"
+        },
+        "roomOpen": {
+          "type": "boolean",
+          "description": "Indicates whether the room is currently open or closed."
+        },
+        "openAt": {
+          "type": "string",
+          "description": "Timestamp when the room was opened in ISO 8601 format.",
+          "format": "date-time"
+        },
+        "closeAt": {
+          "type": "string",
+          "description": "Timestamp when the room will be closed in ISO 8601 format.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "flightId",
+        "depTime",
+        "arrTime",
+        "roomOpen",
+        "openAt",
+        "closeAt"
+      ]
+    },
+    "Message": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Message",
+      "type": "object",
+      "description": "Represents a message posted in a flight's community room.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Message entity."
+        },
+        "flightId": {
+          "type": "string",
+          "description": "Reference to Flight. The ID of the flight this message belongs to."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of message (e.g., boarding, gate, delay, info, question)."
+        },
+        "text": {
+          "type": "string",
+          "description": "The content of the message.",
+          "format": "string"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Anonymous identifier for the user who posted the message (e.g., Passenger #XXX)."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the message was created in ISO 8601 format.",
+          "format": "date-time"
+        },
+        "helpfulCount": {
+          "type": "number",
+          "description": "The number of users who found the message helpful.",
+          "format": "number"
+        }
+      },
+      "required": [
+        "id",
+        "flightId",
+        "type",
+        "text",
+        "userId",
+        "createdAt",
+        "helpfulCount"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "flights/{flightId}",
+        "definition": {
+          "entityName": "Flight",
+          "schema": {
+            "$ref": "#/backend/entities/Flight"
+          },
+          "description": "Cache of flight data from Aviationstack API. Keyed by Flight ID. Includes all Flight properties.",
+          "params": [
+            {
+              "name": "flightId",
+              "description": "Unique identifier for the Flight entity. Constructed from airline IATA and flight number (e.g., TU723)."
+            }
+          ]
+        }
+      },
+      {
+        "path": "rooms/{flightId}",
+        "definition": {
+          "entityName": "Room",
+          "schema": {
+            "$ref": "#/backend/entities/Room"
+          },
+          "description": "Represents a temporary community room associated with a specific flight.",
+          "params": [
+            {
+              "name": "flightId",
+              "description": "Unique identifier for the Flight entity this room is associated with."
+            }
+          ]
+        }
+      },
+      {
+        "path": "rooms/{flightId}/messages/{messageId}",
+        "definition": {
+          "entityName": "Message",
+          "schema": {
+            "$ref": "#/backend/entities/Message"
+          },
+          "description": "Represents a message posted in a flight's community room. Includes denormalized 'flightId' for authorization independence. Messages are create-only and readable by everyone.",
+          "params": [
+            {
+              "name": "flightId",
+              "description": "The ID of the flight this message belongs to."
+            },
+            {
+              "name": "messageId",
+              "description": "Unique identifier for the Message entity."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to optimize for read performance, security, and the specific needs of the Msefir flight tracking application. The structure prioritizes authorization independence and facilitates efficient data retrieval and management for flight data, temporary community rooms, and messages. Since user authentication is anonymous, security relies heavily on structural segregation and rate limiting in Cloud Functions.\n\n**Flights Collection:** The `flights` collection serves as a cache for flight data retrieved from the Aviationstack API. This caching mechanism reduces API calls and improves response times. Security rules for this collection will primarily focus on preventing unauthorized writes, as the data is managed by the backend.\n\n**Rooms and Messages:** The `rooms/{flightId}/messages/{messageId}` subcollection is used for temporary community rooms. This structure provides a clear hierarchy and simplifies data management. The `flightId` is denormalized into each `Message` document, enabling QAPs and facilitating secure data retrieval and filtering.\n\n**Authorization Independence:** Authorization independence is achieved by ensuring that each document contains all the necessary information to determine access rights without needing to perform `get()` operations on parent documents. For example, while the rules are simple in this case given the anonymous nature of the users and create-only nature of messages, if there were different roles, we'd denormalize the `members` map from the room to each message.\n\n**QAPs (Rules are not Filters):** The structural segregation of data allows for efficient and secure `list` operations. Because messages are create-only and read-only for everyone, listing messages in a room requires minimal security overhead. The `flightId` field in the `Message` document, inherited from the parent `Room` document, ensures that list operations can be performed securely and efficiently without requiring complex filtering logic in the security rules.\n\n**Invariants:** Ownership is implicitly managed through the path structure and the `userId` field in messages. Timestamps (`createdAt`, `lastUpdated`) are used to enforce data integrity and manage the lifecycle of rooms and messages. Rate limiting in Cloud Functions prevents abuse and ensures fair usage of the system."
+  }
+}

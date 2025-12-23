@@ -1,0 +1,105 @@
+/**
+ * Core Philosophy: This ruleset supports a flight tracking application with public, temporary chat rooms. It assumes anonymous user authentication. The security model prioritizes public read access for flight and room data while restricting writes to a trusted backend process. For user-generated content (messages), any authenticated (anonymous) user can create messages, but cannot modify or delete them, ensuring data integrity.
+ *
+ * Data Structure:
+ * - /flights/{flightId}: A read-only cache of public flight data, managed by the backend.
+ * - /rooms/{flightId}: Read-only information about a flight's chat room, managed by the backend.
+ * - /rooms/{flightId}/messages/{messageId}: User-generated messages. Publicly readable, but can only be created by signed-in users.
+ *
+ * Key Security Decisions:
+ * - Backend-Managed Data: The `/flights` and `/rooms` collections are treated as read-only for all clients. This implies that a trusted server environment (e.g., Cloud Functions) is responsible for all write operations, preventing any client-side tampering with core application data.
+ * - Anonymous Contribution: Any user who has authenticated anonymously can create messages. To prevent impersonation, the `userId` field in a new message must match the creator's `request.auth.uid`.
+ * - Immutable Messages: Once a message is created, it cannot be updated or deleted by any client. This simplifies the security model and prevents content manipulation in public chat rooms.
+ * - Public Read Access: All data is considered public and can be read by anyone, including unauthenticated users, to facilitate the app's core function of providing flight information and chat access without a mandatory sign-up.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------------------------------------------------------------
+    // Helper Functions
+    // ------------------------------------------------------------------------
+
+    /**
+     * Checks if the user is authenticated (including anonymous users).
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * On message creation, validates that the user is claiming their own UID.
+     * Prevents one anonymous user from posting a message as another.
+     */
+    function isMessageCreator() {
+      return request.resource.data.userId == request.auth.uid;
+    }
+
+    /**
+     * On message creation, validates that the denormalized `flightId` in the
+     * message body matches the `flightId` from the document path.
+     * Enforces relational integrity.
+     */
+    function hasCorrectFlightId(flightId) {
+      return request.resource.data.flightId == flightId;
+    }
+
+    /**
+     * Combines all checks required for a user to create a new message.
+     */
+    function canCreateMessage(flightId) {
+      return isSignedIn() && isMessageCreator() && hasCorrectFlightId(flightId);
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Collection Rules
+    // ------------------------------------------------------------------------
+
+    /**
+     * @description Manages the public, read-only cache of flight data.
+     * @path /flights/{flightId}
+     * @allow (get) Any user, signed-in or not, can read flight data.
+     * @deny (create) A client attempts to create a new flight document.
+     * @principle Secures backend-managed data by making it read-only for clients.
+     */
+    match /flights/{flightId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Manages the public, read-only data for flight-specific chat rooms.
+     * @path /rooms/{flightId}
+     * @allow (get) Any user can read the status of a chat room.
+     * @deny (update) A client attempts to change the `roomOpen` status.
+     * @principle Secures backend-managed data by making it read-only for clients.
+     */
+    match /rooms/{flightId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+
+      /**
+       * @description Manages messages within a flight's chat room.
+       * @path /rooms/{flightId}/messages/{messageId}
+       * @allow (create) An anonymously authenticated user creates a message with their own `userId` and the correct `flightId`.
+       * @deny (update) Any user attempts to edit the text of an existing message.
+       * @deny (create) A signed-in user tries to create a message but provides a `flightId` in the body that doesn't match the collection path.
+       * @principle Allows public contribution of immutable data while validating identity and relational integrity on creation.
+       */
+      match /messages/{messageId} {
+        allow get: if true;
+        allow list: if true;
+        allow create: if canCreateMessage(flightId);
+        allow update: if false;
+        allow delete: if false;
+      }
+    }
+  }
+}
