@@ -39,6 +39,7 @@ export default async function FlightPage({ params }: FlightPageProps) {
   }
 
   const { flight, room } = data;
+  const flightId = flight.flight.iata;
 
   return (
     <div className="container mx-auto max-w-4xl p-4 md:p-8">
@@ -46,7 +47,7 @@ export default async function FlightPage({ params }: FlightPageProps) {
       
       <Separator className="my-8" />
       
-      <FlightRoom room={room} flightNumber={flight.flight.iata} />
+      <FlightRoom room={room} flightId={flightId} />
     </div>
   );
 }

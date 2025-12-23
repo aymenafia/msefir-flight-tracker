@@ -20,14 +20,14 @@ type NewMessagePayload = {
 
 export function postMessage(
   db: Firestore,
-  flightNumber: string,
+  flightId: string,
   payload: NewMessagePayload
 ) {
-  const messagesColRef = collection(db, 'rooms', flightNumber, 'messages');
+  const messagesColRef = collection(db, 'rooms', flightId, 'messages');
 
   const data = {
     ...payload,
-    flightNumber,
+    flightId,
     createdAt: serverTimestamp(),
     helpfulCount: 0,
   };
@@ -44,10 +44,10 @@ export function postMessage(
 
 export function incrementHelpfulCount(
   db: Firestore,
-  flightNumber: string,
+  flightId: string,
   messageId: string
 ) {
-  const messageRef = doc(db, 'rooms', flightNumber, 'messages', messageId);
+  const messageRef = doc(db, 'rooms', flightId, 'messages', messageId);
 
   const data = { helpfulCount: increment(1) };
 

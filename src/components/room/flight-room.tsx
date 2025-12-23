@@ -11,19 +11,19 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 type FlightRoomProps = {
   room: FlightRoomType;
-  flightNumber: string;
+  flightId: string;
 };
 
-export function FlightRoom({ room, flightNumber }: FlightRoomProps) {
+export function FlightRoom({ room, flightId }: FlightRoomProps) {
   const firestore = useFirestore();
 
   const messagesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(
-      collection(firestore, 'rooms', flightNumber, 'messages'),
+      collection(firestore, 'rooms', flightId, 'messages'),
       orderBy('createdAt', 'desc')
     );
-  }, [firestore, flightNumber]);
+  }, [firestore, flightId]);
 
   const { data: messages, isLoading } = useCollection(messagesQuery);
 
@@ -54,8 +54,8 @@ export function FlightRoom({ room, flightNumber }: FlightRoomProps) {
       
       {roomStatus === 'OPEN' ? (
         <div className="space-y-6">
-          <MessagePostForm flightNumber={flightNumber} />
-          <MessageFeed messages={messages || []} flightNumber={flightNumber} />
+          <MessagePostForm flightId={flightId} />
+          <MessageFeed messages={messages || []} />
         </div>
       ) : (
         <div className="text-center py-10 border border-dashed rounded-lg">

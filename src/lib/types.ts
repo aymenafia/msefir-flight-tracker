@@ -37,7 +37,7 @@ export type MessageType = "boarding" | "gate" | "delay" | "info" | "question";
 
 export type RoomMessage = {
   id: string;
-  flightNumber: string;
+  flightId: string;
   type: MessageType;
   text: string;
   userId: string;

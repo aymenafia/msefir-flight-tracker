@@ -9,10 +9,9 @@ import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 type MessageFeedProps = {
   messages: RoomMessage[];
-  flightNumber: string;
 };
 
-export function MessageFeed({ messages, flightNumber }: MessageFeedProps) {
+export function MessageFeed({ messages }: MessageFeedProps) {
   const [summary, setSummary] = useState<string | null>(null);
   const [summaryError, setSummaryError] = useState<string | null>(null);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
@@ -21,7 +20,7 @@ export function MessageFeed({ messages, flightNumber }: MessageFeedProps) {
     setIsLoadingSummary(true);
     setSummary(null);
     setSummaryError(null);
-    const result = await summarizeFlightUpdates(flightNumber, messages);
+    const result = await summarizeFlightUpdates(messages[0]?.flightId, messages);
     if (result.summary) {
       setSummary(result.summary);
     } else {

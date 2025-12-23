@@ -21,7 +21,7 @@ export function HelpfulButton({ message }: HelpfulButtonProps) {
     if (wasClicked || isPending || !firestore) return;
     setWasClicked(true);
     startTransition(() => {
-      incrementHelpfulCount(firestore, message.flightNumber, message.id);
+      incrementHelpfulCount(firestore, message.flightId, message.id);
     });
   };
 

@@ -16,7 +16,7 @@ import { postMessage } from "@/lib/firestore-mutations";
 import { initiateGoogleSignIn } from "@/firebase/auth-mutations";
 
 type MessagePostFormProps = {
-  flightNumber: string;
+  flightId: string;
 };
 
 const formSchema = z.object({
@@ -26,7 +26,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export function MessagePostForm({ flightNumber }: MessagePostFormProps) {
+export function MessagePostForm({ flightId }: MessagePostFormProps) {
   const { toast } = useToast();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -48,7 +48,7 @@ export function MessagePostForm({ flightNumber }: MessagePostFormProps) {
         return;
     }
     
-    postMessage(firestore, flightNumber, { ...data, userId: user.uid });
+    postMessage(firestore, flightId, { ...data, userId: user.uid });
     
     reset();
     toast({
