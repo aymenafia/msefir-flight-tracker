@@ -29,6 +29,7 @@ export type Flight = {
         actual: string | null;
         terminal: string | null;
         gate: string | null;
+        baggage: string | null;
     };
     flight_status: FlightStatus;
     lastUpdated: string;

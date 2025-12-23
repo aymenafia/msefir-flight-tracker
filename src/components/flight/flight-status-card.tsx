@@ -1,7 +1,8 @@
+
 import type { Flight } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plane, Clock } from "lucide-react";
+import { Plane, Clock,行李箱, Milestone, DoorClosed, BaggageClaim } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { FavoritesButton } from "./favorites-button";
@@ -76,27 +77,63 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
-            <div className="bg-muted/30 p-4 rounded-lg">
-                <p className="text-sm font-medium text-muted-foreground">Departure</p>
-                <p className={cn(
-                    "text-2xl font-semibold",
-                    flight.flight_status === "delayed" && "text-warning-foreground bg-warning/10 rounded-md py-1"
-                )}>
-                    {format(estimatedDepartureTime, "HH:mm")}
-                </p>
-                <p className={cn("text-sm", flight.flight_status === "delayed" && "line-through text-muted-foreground")}>
-                    Scheduled {format(scheduledDepartureTime, "HH:mm")}
-                </p>
+        <div className="grid grid-cols-2 gap-4 mt-6">
+            {/* Departure Info */}
+            <div className="space-y-4">
+                <div className="bg-muted/30 p-4 rounded-lg text-center">
+                    <p className="text-sm font-medium text-muted-foreground">Departure</p>
+                    <p className={cn(
+                        "text-2xl font-semibold",
+                        flight.flight_status === "delayed" && "text-warning-foreground bg-warning/10 rounded-md py-1"
+                    )}>
+                        {format(estimatedDepartureTime, "HH:mm")}
+                    </p>
+                    <p className={cn("text-sm", flight.flight_status === "delayed" && "line-through text-muted-foreground")}>
+                        Scheduled {format(scheduledDepartureTime, "HH:mm")}
+                    </p>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm text-center">
+                    <div className="bg-muted/30 p-2 rounded-md">
+                        <Milestone className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
+                        <span className="font-semibold">{flight.departure.terminal || "-"}</span>
+                        <p className="text-xs">Terminal</p>
+                    </div>
+                     <div className="bg-muted/30 p-2 rounded-md">
+                        <DoorClosed className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
+                        <span className="font-semibold">{flight.departure.gate || "-"}</span>
+                        <p className="text-xs">Gate</p>
+                    </div>
+                </div>
             </div>
-            <div className="bg-muted/30 p-4 rounded-lg">
-                <p className="text-sm font-medium text-muted-foreground">Arrival</p>
-                <p className="text-2xl font-semibold">
-                    {format(estimatedArrivalTime, "HH:mm")}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                    Scheduled {format(scheduledArrivalTime, "HH:mm")}
-                </p>
+
+            {/* Arrival Info */}
+            <div className="space-y-4">
+                 <div className="bg-muted/30 p-4 rounded-lg text-center">
+                    <p className="text-sm font-medium text-muted-foreground">Arrival</p>
+                    <p className="text-2xl font-semibold">
+                        {format(estimatedArrivalTime, "HH:mm")}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                        Scheduled {format(scheduledArrivalTime, "HH:mm")}
+                    </p>
+                </div>
+                 <div className="grid grid-cols-3 gap-2 text-sm text-center">
+                    <div className="bg-muted/30 p-2 rounded-md">
+                        <Milestone className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
+                        <span className="font-semibold">{flight.arrival.terminal || "-"}</span>
+                        <p className="text-xs">Terminal</p>
+                    </div>
+                     <div className="bg-muted/30 p-2 rounded-md">
+                        <DoorClosed className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
+                        <span className="font-semibold">{flight.arrival.gate || "-"}</span>
+                        <p className="text-xs">Gate</p>
+                    </div>
+                    <div className="bg-muted/30 p-2 rounded-md">
+                        <BaggageClaim className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
+                        <span className="font-semibold">{flight.arrival.baggage || "-"}</span>
+                        <p className="text-xs">Baggage</p>
+                    </div>
+                </div>
             </div>
         </div>
       </CardContent>
