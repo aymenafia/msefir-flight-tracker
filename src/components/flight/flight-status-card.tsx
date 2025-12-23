@@ -1,7 +1,7 @@
 import type { Flight } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plane, Clock, RefreshCw } from "lucide-react";
+import { Plane, Clock } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { FavoritesButton } from "./favorites-button";
@@ -93,16 +93,3 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
     </Card>
   );
 }
-
-// Custom variants for Badge
-declare module "@/components/ui/badge" {
-    interface BadgeProps {
-        variant?: "default" | "secondary" | "destructive" | "outline" | "success" | "warning";
-    }
-}
-import { cva } from "class-variance-authority";
-import { badgeVariants } from "@/components/ui/badge";
-
-(badgeVariants as any).defaults.variant = "default";
-(badgeVariants as any).variants.variant.success = "border-transparent bg-success text-success-foreground";
-(badgeVariants as any).variants.variant.warning = "border-transparent bg-warning text-warning-foreground";
