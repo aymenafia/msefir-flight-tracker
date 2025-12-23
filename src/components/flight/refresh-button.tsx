@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { differenceInMinutes } from "date-fns";
+import { differenceInMinutes, parseISO } from "date-fns";
 
 type RefreshButtonProps = {
   lastUpdated: string;
@@ -18,19 +18,29 @@ export function RefreshButton({ lastUpdated }: RefreshButtonProps) {
   const { toast } = useToast();
 
   const canRefresh = useMemo(() => {
-    const lastUpdatedDate = new Date(lastUpdated);
+    const lastUpdatedDate = parseISO(lastUpdated);
     const minutesSinceUpdate = differenceInMinutes(new Date(), lastUpdatedDate);
     return minutesSinceUpdate >= 10;
   }, [lastUpdated]);
 
+  // If the page re-renders (e.g. after router.refresh()) and the button
+  // was in a refreshing state, this ensures it resets visually.
+  useEffect(() => {
+    if (isRefreshing) {
+      setIsRefreshing(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastUpdated]);
+
+
   const handleRefresh = () => {
-    if (isRefreshing || !canRefresh) {
-        if (!canRefresh) {
-            toast({
-                title: "Already up-to-date",
-                description: "Flight data was recently updated. Please try again in a few minutes.",
-            });
-        }
+    if (isRefreshing) return;
+
+    if (!canRefresh) {
+        toast({
+            title: "Already up-to-date",
+            description: "Flight data was recently updated. You can refresh again in a few minutes.",
+        });
         return;
     }
 
@@ -40,13 +50,6 @@ export function RefreshButton({ lastUpdated }: RefreshButtonProps) {
         description: "Please wait a moment.",
     });
     router.refresh();
-    
-    // The refresh is handled by Next.js, we just manage the button's state
-    // We'll re-enable it after a timeout in case the refresh fails,
-    // but the main canRefresh logic will handle the 10-minute rule on next render.
-    setTimeout(() => {
-        setIsRefreshing(false);
-    }, 5000);
   };
 
   return (
