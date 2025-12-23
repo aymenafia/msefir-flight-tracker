@@ -10,8 +10,8 @@ type FlightPageProps = {
   };
 };
 
-export async function generateMetadata({ params }: FlightPageProps) {
-    const flightData = await getFlightByNumber(params.flightNumber);
+export async function generateMetadata({ params: { flightNumber } }: FlightPageProps) {
+    const flightData = await getFlightByNumber(flightNumber);
     if (!flightData) {
         return {
             title: "Flight Not Found | msefir"
@@ -29,8 +29,8 @@ export async function generateStaticParams() {
 }
 
 
-export default async function FlightPage({ params }: FlightPageProps) {
-  const data = await getFlightByNumber(params.flightNumber);
+export default async function FlightPage({ params: { flightNumber } }: FlightPageProps) {
+  const data = await getFlightByNumber(flightNumber);
 
   if (!data) {
     notFound();
