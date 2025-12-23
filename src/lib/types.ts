@@ -1,3 +1,4 @@
+
 export type FlightStatus = "scheduled" | "active" | "landed" | "cancelled" | "delayed";
 
 export type Flight = {
@@ -41,8 +42,11 @@ export type RoomMessage = {
   type: MessageType;
   text: string;
   userId: string;
+  userDisplayName: string;
+  userPhotoURL: string | null;
   createdAt: string;
   helpfulCount: number;
+  unhelpfulCount: number;
 };
 
 export type FlightRoom = {

@@ -130,6 +130,14 @@
           "type": "string",
           "description": "Anonymous identifier for the user who posted the message (e.g., Passenger #XXX)."
         },
+        "userDisplayName": {
+            "type": "string",
+            "description": "The display name of the user who posted the message."
+        },
+        "userPhotoURL": {
+            "type": ["string", "null"],
+            "description": "The photo URL of the user who posted the message."
+        },
         "createdAt": {
           "type": "string",
           "description": "Timestamp when the message was created in ISO 8601 format.",
@@ -137,8 +145,11 @@
         },
         "helpfulCount": {
           "type": "number",
-          "description": "The number of users who found the message helpful.",
-          "format": "number"
+          "description": "The number of users who found the message helpful."
+        },
+        "unhelpfulCount": {
+            "type": "number",
+            "description": "The number of users who found the message unhelpful."
         }
       },
       "required": [
@@ -147,8 +158,11 @@
         "type",
         "text",
         "userId",
+        "userDisplayName",
+        "userPhotoURL",
         "createdAt",
-        "helpfulCount"
+        "helpfulCount",
+        "unhelpfulCount"
       ]
     }
   },

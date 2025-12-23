@@ -1,3 +1,4 @@
+
 /**
  * Core Philosophy: This ruleset supports a flight tracking application with public, temporary chat rooms. It assumes anonymous user authentication. The security model prioritizes public read access for flight and room data while restricting writes to a trusted backend process. For user-generated content (messages), any authenticated (anonymous) user can create messages, but cannot modify or delete them, ensuring data integrity.
  *
@@ -51,6 +52,14 @@ service cloud.firestore {
         return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['helpfulCount'])
           && request.resource.data.helpfulCount == resource.data.helpfulCount + 1;
     }
+    
+    /**
+     * On message update, validates that only the `unhelpfulCount` is being incremented.
+     */
+    function isIncrementingUnhelpfulCount() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['unhelpfulCount'])
+          && request.resource.data.unhelpfulCount == resource.data.unhelpfulCount + 1;
+    }
 
     /**
      * Combines all checks required for a user to create a new message.
@@ -60,10 +69,10 @@ service cloud.firestore {
     }
     
     /**
-     * Combines all checks required for a user to update a message.
+     * Combines all checks required for a user to update a message's reaction counts.
      */
     function canUpdateMessage() {
-      return isSignedIn() && isIncrementingHelpfulCount();
+      return isSignedIn() && (isIncrementingHelpfulCount() || isIncrementingUnhelpfulCount());
     }
 
 

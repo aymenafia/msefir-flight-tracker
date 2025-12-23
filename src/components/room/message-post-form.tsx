@@ -1,6 +1,6 @@
+
 "use client";
 
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -48,7 +48,12 @@ export function MessagePostForm({ flightId }: MessagePostFormProps) {
         return;
     }
     
-    postMessage(firestore, flightId, { ...data, userId: user.uid });
+    postMessage(firestore, flightId, { 
+        ...data, 
+        userId: user.uid,
+        userDisplayName: user.displayName || 'Anonymous',
+        userPhotoURL: user.photoURL || null,
+    });
     
     reset();
     toast({
