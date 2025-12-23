@@ -2,7 +2,7 @@
 import { useTranslation } from '@/hooks/use-translation';
 import { Card, CardContent } from '@/components/ui/card';
 
-export function AirlineLogos() {
+export function SupportedAirlines() {
   const { t } = useTranslation();
   return (
     <section className="mt-16 text-center">
