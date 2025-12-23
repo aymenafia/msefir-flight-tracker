@@ -12,7 +12,6 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
   title: "msefir — Check your flight status easily",
   description: "msefir is a simple flight status tracker for travelers in the Maghreb region. Fast, clear, and stress-free flight information.",
-  manifest: "/manifest.json",
   icons: {
     apple: "/icon.png",
   },
