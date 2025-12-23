@@ -4,6 +4,7 @@ import { FavoritesList } from "@/components/flight/favorites-list";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/hooks/use-translation";
+import { AirlineLogos } from "@/components/home/airline-logos";
 
 export default function Home() {
   const { t } = useTranslation();
@@ -34,6 +35,8 @@ export default function Home() {
           </Suspense>
         </aside>
       </div>
+
+      <AirlineLogos />
     </div>
   );
 }

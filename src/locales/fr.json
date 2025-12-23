@@ -4,7 +4,8 @@
         "title": "Suivez le statut de votre vol",
         "subtitle": "msefir — Suivez votre vol sans stress",
         "findFlight": "Trouvez votre vol",
-        "myFlights": "Mes vols"
+        "myFlights": "Mes vols",
+        "supportedAirlines": "Couvrant les principales compagnies aériennes du Maghreb"
     },
     "footer": {
         "tagline": "msefir — Suivez votre vol sans stress",
