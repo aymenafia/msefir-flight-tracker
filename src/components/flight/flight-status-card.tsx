@@ -3,7 +3,7 @@
 import type { Flight } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plane, Clock, BaggageClaim, Milestone, DoorOpen } from "lucide-react";
+import { Plane, Clock, BaggageClaim, Milestone, DoorClosed } from "lucide-react";
 import { format, parseISO, isValid } from "date-fns";
 import { cn } from "@/lib/utils";
 import { FavoritesButton } from "./favorites-button";
@@ -31,21 +31,29 @@ const getStatusVariant = (status: Flight["flight_status"]) => {
 };
 
 const formatTime = (dateString: string | null | undefined, fallbackString?: string | null) => {
+    console.log(`[formatTime] received dateString: ${dateString}, fallbackString: ${fallbackString}`);
     const dateToParse = dateString || fallbackString;
     if (!dateToParse) {
+        console.log("[formatTime] No valid date string to parse, returning '--:--'");
         return "--:--";
     }
     const date = parseISO(dateToParse);
     if (!isValid(date)) {
+        console.error(`[formatTime] Failed to parse date: ${dateToParse}`);
         return "--:--";
     }
-    return format(date, "HH:mm");
+    const formatted = format(date, "HH:mm");
+    console.log(`[formatTime] Parsed ${dateToParse} to ${formatted}`);
+    return formatted;
 }
 
 export function FlightStatusCard({ flight }: FlightStatusCardProps) {
+  console.log("[FlightStatusCard] Received props:", JSON.stringify({ flight }, null, 2));
+
   const { t } = useTranslation();
 
   if (!flight) {
+    console.error("[FlightStatusCard] Rendered with null or undefined flight prop.");
     return (
       <Card className="shadow-lg overflow-hidden">
         <CardHeader>
@@ -127,7 +135,7 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
                         <p className="text-xs">{t('flight.terminal')}</p>
                     </div>
                      <div className="bg-muted/30 p-2 rounded-md">
-                        <DoorOpen className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
+                        <DoorClosed className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
                         <span className="font-semibold">{flight.departure.gate || "-"}</span>
                         <p className="text-xs">{t('flight.gate')}</p>
                     </div>
@@ -152,7 +160,7 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
                         <p className="text-xs">{t('flight.terminal')}</p>
                     </div>
                      <div className="bg-muted/30 p-2 rounded-md">
-                        <DoorOpen className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
+                        <DoorClosed className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
                         <span className="font-semibold">{flight.arrival.gate || "-"}</span>
                         <p className="text-xs">{t('flight.gate')}</p>
                     </div>
@@ -174,5 +182,3 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
     </Card>
   );
 }
-
-    
