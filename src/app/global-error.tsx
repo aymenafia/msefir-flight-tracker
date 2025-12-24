@@ -1,3 +1,4 @@
+
 'use client';
 
 export default function GlobalError({
@@ -7,6 +8,9 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // Note: useEffect has been removed as it can be unreliable in a root error boundary.
+  // Logging can be done via server-side or a dedicated error reporting service integration
+  // that doesn't rely on React hooks running in the boundary.
   console.error(error);
 
   return (
