@@ -37,8 +37,9 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
       if(data.error) console.error("AviationStack API returned an error:", data.error);
       return null;
     }
-
-    const flightData = data.data.find((f: any) => f.flight_status !== 'cancelled' && f.flight_status !== 'landed');
+    
+    // Select the most relevant flight: prefer 'active', then 'scheduled'
+    const flightData = data.data.find((f: any) => f.flight_status === 'active') || data.data.find((f: any) => f.flight_status === 'scheduled');
     
     if (!flightData) {
       console.log("No active or scheduled flight data found for the given IATA.", flightIata);
