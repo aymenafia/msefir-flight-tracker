@@ -18,6 +18,7 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000);
+    console.log(`[data.ts] Fetching from AviationStack: ${url}`);
 
     const response = await fetch(url, { 
       signal: controller.signal,
@@ -28,22 +29,26 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
 
     if (!response.ok) {
       const errorBody = await response.text();
-      console.error(`AviationStack API error: ${response.statusText}`, errorBody);
+      console.error(`[data.ts] AviationStack API error: ${response.statusText}`, errorBody);
       return null;
     }
     const data = await response.json();
+    console.log('[data.ts] Raw API Response:', JSON.stringify(data, null, 2));
+
 
     if (data.error || !data.data || data.data.length === 0) {
-      if(data.error) console.error("AviationStack API returned an error:", data.error);
+      if(data.error) console.error("[data.ts] AviationStack API returned an error:", data.error);
+      else console.error("[data.ts] AviationStack API returned no data for the flight.");
       return null;
     }
     
-    // Select the most relevant flight: prefer 'active', then 'scheduled'
     const flightData = data.data.find((f: any) => f.flight_status === 'active') || data.data.find((f: any) => f.flight_status === 'scheduled') || data.data[0];
     
     if (!flightData) {
-      return null;
+        console.error("[data.ts] Could not find a suitable flight from the API response.");
+        return null;
     }
+    console.log('[data.ts] Selected flight data from API:', flightData);
 
     const normalized: Flight = {
       airline: {
@@ -78,16 +83,17 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
       flight_status: flightData.flight_status || 'scheduled',
       lastUpdated: new Date().toISOString(),
     };
+    console.log('[data.ts] Normalized flight object:', normalized);
     return normalized;
   } catch (error) {
     if (error instanceof Error) {
         if (error.name === 'AbortError') {
-            console.error("AviationStack API request timed out.");
+            console.error("[data.ts] AviationStack API request timed out.");
         } else {
-            console.error("Failed to fetch from AviationStack:", error.message);
+            console.error("[data.ts] Failed to fetch from AviationStack:", error.message);
         }
     } else {
-        console.error("An unknown error occurred while fetching from AviationStack:", error);
+        console.error("[data.ts] An unknown error occurred while fetching from AviationStack:", error);
     }
     return null;
   }
@@ -165,18 +171,16 @@ export const getFlightByNumber = async (
   flightNumber: string
 ): Promise<{ flight: Flight; room: FlightRoom; searchCount: number } | null> => {
   const upperCaseFlightNumber = flightNumber.toUpperCase();
+  console.log(`[data.ts] getFlightByNumber called for: ${upperCaseFlightNumber}`);
 
   try {
     const flight = await fetchFlightFromAPI(upperCaseFlightNumber);
 
     if (!flight) {
-      console.error(`getFlightByNumber: fetchFlightFromAPI returned null for ${upperCaseFlightNumber}.`);
+      console.error(`[data.ts] getFlightByNumber: fetchFlightFromAPI returned null for ${upperCaseFlightNumber}.`);
       return null;
     }
 
-    // This is a placeholder for real backend logic.
-    // In a real app, you would fetch/create the room and its messages
-    // from Firestore, and also fetch the search count.
     const searchCount = Math.floor(Math.random() * 50) + 1; // Mock search count
     
     const systemMessages = createSystemMessages(flight);
@@ -184,16 +188,16 @@ export const getFlightByNumber = async (
     const room: FlightRoom = {
       flightNumber: upperCaseFlightNumber,
       status: "OPEN",
-      activePassengers: 0, // This would come from a real-time presence system
+      activePassengers: 0,
       messages: systemMessages,
     };
 
-    return { flight, room, searchCount };
+    const result = { flight, room, searchCount };
+    console.log('[data.ts] getFlightByNumber returning data:', result);
+    return result;
 
   } catch (error: any) {
-    console.error(`Error in getFlightByNumber for ${upperCaseFlightNumber}: ${error.message || 'Unknown error'}`);
+    console.error(`[data.ts] Error in getFlightByNumber for ${upperCaseFlightNumber}: ${error.message || 'Unknown error'}`);
     return null;
   }
 };
-
-    

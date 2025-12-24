@@ -15,6 +15,7 @@ type FlightStatusCardProps = {
 };
 
 const getStatusVariant = (status: Flight["flight_status"]) => {
+  console.log(`[FSC-DEBUG] getStatusVariant called with status: ${status}`);
   switch (status) {
     case "scheduled":
       return "default";
@@ -31,35 +32,46 @@ const getStatusVariant = (status: Flight["flight_status"]) => {
 };
 
 const formatTime = (dateString: string | null | undefined, fallbackString?: string | null) => {
+    console.log(`[FSC-DEBUG] formatTime called with dateString: ${dateString}, fallbackString: ${fallbackString}`);
     const dateToParse = dateString || fallbackString;
     if (!dateToParse) {
+        console.log('[FSC-DEBUG] formatTime returning "--:--" due to no date string.');
         return "--:--";
     }
     const date = parseISO(dateToParse);
     if (!isValid(date)) {
+        console.log(`[FSC-DEBUG] formatTime returning "--:--" due to invalid date: ${dateToParse}`);
         return "--:--";
     }
-    return format(date, "HH:mm");
+    const formatted = format(date, "HH:mm");
+    console.log(`[FSC-DEBUG] formatTime formatted ${dateToParse} to ${formatted}`);
+    return formatted;
 }
 
 export function FlightStatusCard({ flight }: FlightStatusCardProps) {
+  console.log('[FSC-DEBUG] Rendering FlightStatusCard with flight:', flight);
   const { t } = useTranslation();
 
   if (!flight) {
+    console.error('[FSC-DEBUG] CRITICAL: flight prop is null or undefined. Rendering error card.');
     return (
       <Card className="shadow-lg overflow-hidden">
         <CardHeader>
           <CardTitle>Error: Flight Data Unavailable</CardTitle>
-          <CardDescription>Could not display flight information.</CardDescription>
+          <CardDescription>Could not display flight information because data is missing.</CardDescription>
         </CardHeader>
       </Card>
     );
   }
 
   const scheduledDepartureTime = flight.departure.scheduled;
+  console.log(`[FSC-DEBUG] scheduledDepartureTime: ${scheduledDepartureTime}`);
   const estimatedDepartureTime = flight.departure.estimated;
+  console.log(`[FSC-DEBUG] estimatedDepartureTime: ${estimatedDepartureTime}`);
   const scheduledArrivalTime = flight.arrival.scheduled;
+  console.log(`[FSC-DEBUG] scheduledArrivalTime: ${scheduledArrivalTime}`);
   const estimatedArrivalTime = flight.arrival.estimated;
+  console.log(`[FSC-DEBUG] estimatedArrivalTime: ${estimatedArrivalTime}`);
 
   const statusLabel: Record<string, string> = {
     scheduled: t('flight.statusScheduled'),
@@ -71,7 +83,36 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
   }
 
   const flightStatus = flight.flight_status || 'scheduled';
+  console.log(`[FSC-DEBUG] flightStatus: ${flightStatus}`);
+  
+  const statusVariant = getStatusVariant(flightStatus);
+  console.log(`[FSC-DEBUG] statusVariant: ${statusVariant}`);
+
+  const statusDisplayLabel = statusLabel[flightStatus] || t('flight.statusOnTime');
+  console.log(`[FSC-DEBUG] statusDisplayLabel: ${statusDisplayLabel}`);
+
   const lastUpdatedDate = parseISO(flight.lastUpdated);
+  console.log(`[FSC-DEBUG] lastUpdatedDate: ${lastUpdatedDate}`);
+
+  // Log all values before rendering
+  console.log(`[FSC-DEBUG] Values for render:
+    - flight.airline.name: ${flight.airline.name}
+    - flight.flight.iata: ${flight.flight.iata}
+    - flight.departure.iata: ${flight.departure.iata}
+    - flight.departure.airport: ${flight.departure.airport}
+    - flight.arrival.iata: ${flight.arrival.iata}
+    - flight.arrival.airport: ${flight.arrival.airport}
+    - formatted departure time: ${formatTime(estimatedDepartureTime, scheduledDepartureTime)}
+    - formatted scheduled departure time: ${formatTime(scheduledDepartureTime)}
+    - flight.departure.terminal: ${flight.departure.terminal}
+    - flight.departure.gate: ${flight.departure.gate}
+    - formatted arrival time: ${formatTime(estimatedArrivalTime, scheduledArrivalTime)}
+    - formatted scheduled arrival time: ${formatTime(scheduledArrivalTime)}
+    - flight.arrival.terminal: ${flight.arrival.terminal}
+    - flight.arrival.gate: ${flight.arrival.gate}
+    - flight.arrival.baggage: ${flight.arrival.baggage}
+    - last updated formatted: ${isValid(lastUpdatedDate) ? format(lastUpdatedDate, "HH:mm:ss") : 'Updating...'}
+  `);
 
   return (
     <Card className="shadow-lg overflow-hidden">
@@ -84,8 +125,8 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
           <div className="flex items-center gap-2">
             <FavoritesButton flightNumber={flight.flight.iata} />
             <RefreshButton lastUpdated={flight.lastUpdated} />
-            <Badge variant={getStatusVariant(flightStatus)} className="text-base px-3 py-1">
-              {statusLabel[flightStatus] || t('flight.statusOnTime')}
+            <Badge variant={statusVariant} className="text-base px-3 py-1">
+              {statusDisplayLabel}
             </Badge>
           </div>
         </div>
@@ -174,5 +215,3 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
     </Card>
   );
 }
-
-    
