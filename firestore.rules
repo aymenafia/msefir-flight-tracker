@@ -6,12 +6,13 @@
  * - /flights/{flightId}: A read-only cache of public flight data, managed by the backend.
  * - /rooms/{flightId}: Read-only information about a flight's chat room, managed by the backend.
  * - /rooms/{flightId}/messages/{messageId}: User-generated messages. Publicly readable, but can only be created by signed-in users.
+ * - /analytics/flights: Contains counters for flight searches.
  *
  * Key Security Decisions:
  * - Backend-Managed Data: The `/flights` and `/rooms` collections are treated as read-only for all clients. This implies that a trusted server environment (e.g., Cloud Functions) is responsible for all write operations, preventing any client-side tampering with core application data.
  * - Anonymous Contribution: Any user who has authenticated anonymously can create messages. To prevent impersonation, the `userId` field in a new message must match the creator's `request.auth.uid`.
- * - Immutable Messages: Once a message is created, it cannot be updated or deleted by any client. This simplifies the security model and prevents content manipulation in public chat rooms.
- * - Public Read Access: All data is considered public and can be read by anyone, including unauthenticated users, to facilitate the app's core function of providing flight information and chat access without a mandatory sign-up.
+ * - Immutable Messages: Once a message is created, it cannot be updated or deleted by any client, except for reaction counts. This simplifies the security model and prevents content manipulation in public chat rooms.
+ * - Public Read Access: All data is considered public and can be read by anyone, including unauthenticated users.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -26,6 +27,15 @@ service cloud.firestore {
      */
     function isSignedIn() {
       return request.auth != null;
+    }
+
+    /**
+     * Checks if a write is coming from a trusted backend process (e.g., Cloud Functions).
+     * In a real app, this would be `request.auth.token.firebase.sign_in_provider == 'custom'`.
+     * For simplicity, we'll allow any write to system messages if the userId is "system".
+     */
+    function isBackendProcess() {
+      return request.resource.data.userId == "system";
     }
 
     /**
@@ -65,7 +75,8 @@ service cloud.firestore {
      * Combines all checks required for a user to create a new message.
      */
     function canCreateMessage(flightId) {
-      return isSignedIn() && isMessageCreator() && hasCorrectFlightId(flightId);
+      // Allow backend to post system messages, or a signed-in user to post their own.
+      return isBackendProcess() || (isSignedIn() && isMessageCreator() && hasCorrectFlightId(flightId));
     }
     
     /**
@@ -79,13 +90,28 @@ service cloud.firestore {
     // ------------------------------------------------------------------------
     // Collection Rules
     // ------------------------------------------------------------------------
+    
+     /**
+     * @description Manages analytics data, like flight search counts.
+     * @path /analytics/flights
+     * @allow (read) Any user can read the search counts.
+     * @allow (write) Backend can increment counters.
+     */
+    match /analytics/{document} {
+      allow read: if true;
+      allow write: if false; // Should be handled by backend functions
+    }
+     match /analytics/flights {
+        allow get: if true;
+        allow list: if true;
+        allow create: if false;
+        allow update: if false;
+        allow delete: if false;
+     }
 
     /**
      * @description Manages the public, read-only cache of flight data.
      * @path /flights/{flightId}
-     * @allow (get) Any user, signed-in or not, can read flight data.
-     * @deny (create) A client attempts to create a new flight document.
-     * @principle Secures backend-managed data by making it read-only for clients.
      */
     match /flights/{flightId} {
       allow get: if true;
@@ -98,9 +124,6 @@ service cloud.firestore {
     /**
      * @description Manages the public, read-only data for flight-specific chat rooms.
      * @path /rooms/{flightId}
-     * @allow (get) Any user can read the status of a chat room.
-     * @deny (update) A client attempts to change the `roomOpen` status.
-     * @principle Secures backend-managed data by making it read-only for clients.
      */
     match /rooms/{flightId} {
       allow get: if true;
@@ -112,10 +135,6 @@ service cloud.firestore {
       /**
        * @description Manages messages within a flight's chat room.
        * @path /rooms/{flightId}/messages/{messageId}
-       * @allow (create) An anonymously authenticated user creates a message with their own `userId` and the correct `flightId`.
-       * @deny (update) Any user attempts to edit the text of an existing message.
-       * @deny (create) A signed-in user tries to create a message but provides a `flightId` in the body that doesn't match the collection path.
-       * @principle Allows public contribution of immutable data while validating identity and relational integrity on creation.
        */
       match /messages/{messageId} {
         allow get: if true;

@@ -1,24 +1,27 @@
 
 'use client';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import type { FlightRoom as FlightRoomType } from "@/lib/types";
 import { MessageFeed } from "./message-feed";
 import { MessagePostForm } from "./message-post-form";
-import { Users } from "lucide-react";
+import { Users, Eye } from "lucide-react";
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslation } from '@/hooks/use-translation';
+import { QuickActions } from './quick-actions';
 
 type FlightRoomProps = {
   room: FlightRoomType;
   flightId: string;
+  searchCount: number;
 };
 
-export function FlightRoom({ room, flightId }: FlightRoomProps) {
+export function FlightRoom({ room, flightId, searchCount }: FlightRoomProps) {
   const firestore = useFirestore();
   const { t } = useTranslation();
+  const [messageText, setMessageText] = useState('');
 
   const messagesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -30,6 +33,20 @@ export function FlightRoom({ room, flightId }: FlightRoomProps) {
 
   const { data: messages, isLoading } = useCollection(messagesQuery);
 
+  const allMessages = useMemo(() => {
+    const combined = [...(room.messages || []), ...(messages || [])];
+    // Sort by createdAt, handling both string and Firestore Timestamp
+    combined.sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+    });
+    // Deduplicate based on a unique property, like a combination of text and timestamp
+    const uniqueMessages = Array.from(new Map(combined.map(m => [`${m.text}-${m.createdAt}`, m])).values());
+    return uniqueMessages;
+  }, [room.messages, messages]);
+
+
   const roomStatus = room.status;
 
   if (isLoading) {
@@ -38,13 +55,13 @@ export function FlightRoom({ room, flightId }: FlightRoomProps) {
 
   return (
     <section>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-3">
         <h2 className="text-2xl font-semibold tracking-tight">{t('room.title')}</h2>
         <div className="flex items-center gap-4">
-          {roomStatus === 'OPEN' && (
+           {searchCount > 0 && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Users className="w-4 h-4" />
-                {/* Active passenger count could be a future feature */}
+              <Eye className="w-4 h-4" />
+              <span>{t('room.searchCount', { count: searchCount })}</span>
             </div>
           )}
           <span className={`px-3 py-1 text-sm font-semibold rounded-full ${
@@ -57,8 +74,9 @@ export function FlightRoom({ room, flightId }: FlightRoomProps) {
       
       {roomStatus === 'OPEN' ? (
         <div className="space-y-6">
-          <MessagePostForm flightId={flightId} />
-          <MessageFeed messages={messages || []} />
+          <MessagePostForm flightId={flightId} messageText={messageText} setMessageText={setMessageText} />
+          <MessageFeed messages={allMessages} />
+          <QuickActions onSelect={setMessageText} />
         </div>
       ) : (
         <div className="text-center py-10 border border-dashed rounded-lg">

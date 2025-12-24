@@ -75,7 +75,8 @@
         "messageTypeGate": "Gate",
         "messageTypeBoarding": "Boarding",
         "messageTypeDelay": "Delay",
-        "messageTypeQuestion": "Question"
+        "messageTypeQuestion": "Question",
+        "searchCount": "{count} people searched this flight recently"
     },
     "page": {
         "notFound": "Page Not Found",
@@ -83,5 +84,18 @@
         "globalError": "Something went wrong",
         "globalErrorMessage": "An unexpected error occurred. Please try again.",
         "tryAgain": "Try Again"
+    },
+    "quickActions": {
+        "title": "Or use a quick action:",
+        "boarding": "Boarding?",
+        "boardingText": "Boarding started? Anyone can confirm?",
+        "gateChange": "Gate Change?",
+        "gateChangeText": "Did the gate change? If yes, to where?",
+        "delay": "Delay?",
+        "delayText": "Is there a delay? Minutes or reason?",
+        "checkIn": "Check-in?",
+        "checkInText": "Which check-in counter is being used right now?",
+        "atAirport": "At Airport",
+        "atAirportText": "I’m at the airport now. Will share updates soon."
     }
 }
