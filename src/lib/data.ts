@@ -12,17 +12,34 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
   const airlineIata = flightIata.slice(0, 2);
   const flightNumber = flightIata.slice(2);
 
-  const url = `http://api.aviationstack.com/v1/flights?access_key=${apiKey}&airline_iata=${airlineIata}&flight_number=${flightNumber}`;
+  // Use HTTPS for the API endpoint. Free plans may be restricted to HTTP.
+  const url = `https://api.aviationstack.com/v1/flights?access_key=${apiKey}&airline_iata=${airlineIata}&flight_number=${flightNumber}`;
 
   try {
-    const response = await fetch(url, { next: { revalidate: 600 } });
+    // Set a timeout for the fetch request
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8-second timeout
+
+    const response = await fetch(url, { 
+      signal: controller.signal,
+      next: { revalidate: 600 } 
+    });
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
-      throw new Error(`AviationStack API error: ${response.statusText}`);
-    }
-    const data = await response.json();
-    if (!data.data || data.data.length === 0) {
+      // Log detailed API error from AviationStack if available
+      const errorBody = await response.text();
+      console.error(`AviationStack API error: ${response.statusText}`, errorBody);
       return null;
     }
+    const data = await response.json();
+
+    // Check for API-level errors or no data
+    if (data.error || !data.data || data.data.length === 0) {
+      if(data.error) console.error("AviationStack API returned an error:", data.error);
+      return null;
+    }
+
     const flightData = data.data[0];
 
     const normalized: Flight = {
@@ -62,7 +79,6 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
     return normalized;
   } catch (error) {
     console.error("Failed to fetch from AviationStack:", error);
-    // Return null instead of throwing, so the UI can handle it gracefully
     return null;
   }
 }
