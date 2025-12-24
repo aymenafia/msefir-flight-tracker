@@ -18,26 +18,17 @@ export function FlightSearch() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("handleSearch triggered");
     setError("");
 
-    console.log("Raw flight number input:", flightNumber);
     const trimmedFlightNumber = flightNumber.trim().toUpperCase();
-    console.log("Trimmed and uppercased flight number:", trimmedFlightNumber);
     
     const pattern = /^[A-Z]{2}\d{1,4}$/;
-    const validationInput = trimmedFlightNumber.replace(/\s+/g, '');
-    console.log("String used for validation:", validationInput);
-
-    if (!pattern.test(validationInput)) {
-      console.error("Validation failed for:", validationInput);
+    if (!pattern.test(trimmedFlightNumber.replace(/\s+/g, ''))) {
       setError(t('flight.searchError'));
       return;
     }
 
-    const sanitizedFlightNumber = validationInput;
-    console.log("Validation passed. Sanitized flight number:", sanitizedFlightNumber);
-    console.log(`Navigating to /flight/${sanitizedFlightNumber}`);
+    const sanitizedFlightNumber = trimmedFlightNumber.replace(/\s+/g, '');
     router.push(`/flight/${sanitizedFlightNumber}`);
   };
 
