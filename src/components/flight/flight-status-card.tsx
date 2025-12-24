@@ -35,7 +35,7 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
   const scheduledDepartureTime = parseISO(flight.departure.scheduled);
   const estimatedDepartureTime = parseISO(flight.departure.estimated);
   const scheduledArrivalTime = parseISO(flight.arrival.scheduled);
-  const estimatedArrivalTime = parseISO(flight.arrival.estimated || flight.arrival.scheduled);
+  const estimatedArrivalTime = parseISO(flight.arrival.estimated);
 
   const statusLabel: Record<string, string> = {
     scheduled: t('flight.statusScheduled'),
