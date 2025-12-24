@@ -34,16 +34,14 @@ const getStatusVariant = (status: Flight["flight_status"]) => {
 export function FlightStatusCard({ flight }: FlightStatusCardProps) {
   const { t } = useTranslation();
   const [formattedTimes, setFormattedTimes] = useState({
-    departure: '',
-    scheduledDeparture: '',
-    arrival: '',
-    scheduledArrival: '',
-    lastUpdated: ''
+    departure: '...',
+    scheduledDeparture: '...',
+    arrival: '...',
+    scheduledArrival: '...',
+    lastUpdated: '...'
   });
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
     try {
       const scheduledDepartureTime = parseISO(flight.departure.scheduled);
       const estimatedDepartureTime = parseISO(flight.departure.estimated ?? flight.departure.scheduled);
@@ -59,6 +57,7 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
       });
     } catch (error) {
       console.error("Failed to format flight dates", error);
+      // Keep placeholder values on error
     }
   }, [flight]);
 
@@ -114,10 +113,10 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
                         "text-2xl font-semibold",
                         flightStatus === "delayed" && "text-warning-foreground bg-warning/10 rounded-md py-1"
                     )}>
-                        {isClient ? formattedTimes.departure : '...'}
+                        {formattedTimes.departure}
                     </p>
                     <p className={cn("text-sm", flightStatus === "delayed" && "line-through text-muted-foreground")}>
-                        {t('flight.scheduledTime')} {isClient ? formattedTimes.scheduledDeparture : '...'}
+                        {t('flight.scheduledTime')} {formattedTimes.scheduledDeparture}
                     </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm text-center">
@@ -139,10 +138,10 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
                  <div className="bg-muted/30 p-4 rounded-lg text-center">
                     <p className="text-sm font-medium text-muted-foreground">{t('flight.arrival')}</p>
                     <p className="text-2xl font-semibold">
-                        {isClient ? formattedTimes.arrival : '...'}
+                        {formattedTimes.arrival}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                        {t('flight.scheduledTime')} {isClient ? formattedTimes.scheduledArrival : '...'}
+                        {t('flight.scheduledTime')} {formattedTimes.scheduledArrival}
                     </p>
                 </div>
                  <div className="grid grid-cols-3 gap-2 text-sm text-center">
@@ -168,7 +167,7 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
       <CardFooter className="bg-muted/30 p-3 text-center">
         <p className="w-full text-xs text-muted-foreground flex items-center justify-center gap-1">
           <Clock className="w-3 h-3" />
-          {t('flight.lastUpdated')}: {isClient ? formattedTimes.lastUpdated : '...'}
+          {t('flight.lastUpdated')}: {formattedTimes.lastUpdated}
         </p>
       </CardFooter>
     </Card>
