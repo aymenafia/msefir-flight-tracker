@@ -31,38 +31,16 @@ const getStatusVariant = (status: Flight["flight_status"]) => {
 };
 
 const formatTime = (dateString: string | null | undefined, fallbackString?: string | null) => {
-    console.log(`[formatTime] received dateString: ${dateString}, fallbackString: ${fallbackString}`);
     const dateToParse = dateString || fallbackString;
     if (!dateToParse) {
-        console.log("[formatTime] No valid date string to parse, returning '--:--'");
         return "--:--";
     }
     const date = parseISO(dateToParse);
-    if (!isValid(date)) {
-        console.error(`[formatTime] Failed to parse date: ${dateToParse}`);
-        return "--:--";
-    }
-    const formatted = format(date, "HH:mm");
-    console.log(`[formatTime] Parsed ${dateToParse} to ${formatted}`);
-    return formatted;
+    return isValid(date) ? format(date, "HH:mm") : "--:--";
 }
 
 export function FlightStatusCard({ flight }: FlightStatusCardProps) {
-  console.log("[FlightStatusCard] Received props:", JSON.stringify({ flight }, null, 2));
-
   const { t } = useTranslation();
-
-  if (!flight) {
-    console.error("[FlightStatusCard] Rendered with null or undefined flight prop.");
-    return (
-      <Card className="shadow-lg overflow-hidden">
-        <CardHeader>
-          <CardTitle>Error: Flight Data Unavailable</CardTitle>
-          <CardDescription>Could not display flight information.</CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
 
   const scheduledDepartureTime = flight.departure.scheduled;
   const estimatedDepartureTime = flight.departure.estimated;

@@ -32,11 +32,8 @@ export async function generateStaticParams() {
 
 export default async function FlightPage({ params }: FlightPageProps) {
   const data = await getFlightByNumber(params.flightNumber);
-  console.log("[FlightPage] Data received from getFlightByNumber:", JSON.stringify(data, null, 2));
-
 
   if (!data || !data.flight) {
-    console.error("[FlightPage] No data or no flight object found, calling notFound().");
     notFound();
   }
 
