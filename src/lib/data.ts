@@ -2,10 +2,17 @@
 import type { Flight, FlightRoom, RoomMessage } from "./types";
 
 async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
+  const apiKey = process.env.AVIATIONSTACK_API_KEY;
+
+  if (!apiKey || apiKey === "YOUR_KEY_HERE") {
+    console.warn("AviationStack API key is not configured. Skipping API call.");
+    return null;
+  }
+
   const airlineIata = flightIata.slice(0, 2);
   const flightNumber = flightIata.slice(2);
 
-  const url = `http://api.aviationstack.com/v1/flights?access_key=${process.env.AVIATIONSTACK_API_KEY}&airline_iata=${airlineIata}&flight_number=${flightNumber}`;
+  const url = `http://api.aviationstack.com/v1/flights?access_key=${apiKey}&airline_iata=${airlineIata}&flight_number=${flightNumber}`;
 
   try {
     const response = await fetch(url, { next: { revalidate: 600 } });
@@ -55,7 +62,8 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
     return normalized;
   } catch (error) {
     console.error("Failed to fetch from AviationStack:", error);
-    throw error;
+    // Return null instead of throwing, so the UI can handle it gracefully
+    return null;
   }
 }
 
@@ -71,7 +79,7 @@ export const getFlightByNumber = async (
       return null;
     }
 
-    // Create a temporary mock room object since server-side fetch is disabled.
+    // Create a temporary mock room object.
     const room: FlightRoom = {
       flightNumber: upperCaseFlightNumber,
       status: "OPEN", // Default to open for client-side handling
