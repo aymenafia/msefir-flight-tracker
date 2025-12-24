@@ -13,7 +13,7 @@ type FlightPageProps = {
 
 export async function generateMetadata({ params }: FlightPageProps) {
     const flightData = await getFlightByNumber(params.flightNumber);
-    if (!flightData || !flightData.flight) {
+    if (!flightData) {
         return {
             title: "Flight Not Found | msefir"
         }
@@ -33,11 +33,11 @@ export async function generateStaticParams() {
 export default async function FlightPage({ params }: FlightPageProps) {
   const data = await getFlightByNumber(params.flightNumber);
 
-  if (!data || !data.flight) {
+  if (!data) {
     notFound();
   }
 
-  const { flight, room, searchCount } = data;
+  const { flight, room } = data;
   const flightId = flight.flight.iata;
 
   return (
@@ -46,7 +46,7 @@ export default async function FlightPage({ params }: FlightPageProps) {
       
       <Separator className="my-8" />
       
-      <FlightRoom room={room} flightId={flightId} searchCount={searchCount} />
+      <FlightRoom room={room} flightId={flightId} />
     </div>
   );
 }

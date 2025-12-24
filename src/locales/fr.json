@@ -74,8 +74,7 @@
         "messageTypeGate": "Porte",
         "messageTypeBoarding": "Embarquement",
         "messageTypeDelay": "Retard",
-        "messageTypeQuestion": "Question",
-        "searchCount": "{count} personnes ont récemment recherché ce vol"
+        "messageTypeQuestion": "Question"
     },
     "page": {
         "notFound": "Page non trouvée",
@@ -83,18 +82,5 @@
         "globalError": "Une erreur est survenue",
         "globalErrorMessage": "Une erreur inattendue est survenue. Veuillez réessayer.",
         "tryAgain": "Réessayer"
-    },
-    "quickActions": {
-        "title": "Ou utilisez une action rapide :",
-        "boarding": "Embarquement ?",
-        "boardingText": "L'embarquement a-t-il commencé ? Quelqu'un peut confirmer ?",
-        "gateChange": "Porte ?",
-        "gateChangeText": "La porte a-t-elle changé ? Si oui, pour où ?",
-        "delay": "Retard ?",
-        "delayText": "Y a-t-il un retard ? Minutes ou raison ?",
-        "checkIn": "Enregistrement ?",
-        "checkInText": "Quel guichet d'enregistrement est utilisé en ce moment ?",
-        "atAirport": "À l'aéroport",
-        "atAirportText": "Je suis à l'aéroport maintenant. Je partagerai des mises à jour bientôt."
     }
 }

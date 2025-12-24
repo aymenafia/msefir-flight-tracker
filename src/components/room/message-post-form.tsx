@@ -15,12 +15,9 @@ import { Loader2 } from "lucide-react";
 import { postMessage } from "@/lib/firestore-mutations";
 import { initiateGoogleSignIn } from "@/firebase/auth-mutations";
 import { useTranslation } from "@/hooks/use-translation";
-import { useEffect } from "react";
 
 type MessagePostFormProps = {
   flightId: string;
-  messageText: string;
-  setMessageText: (text: string) => void;
 };
 
 const formSchema = z.object({
@@ -30,7 +27,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export function MessagePostForm({ flightId, messageText, setMessageText }: MessagePostFormProps) {
+export function MessagePostForm({ flightId }: MessagePostFormProps) {
   const { toast } = useToast();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -45,13 +42,7 @@ export function MessagePostForm({ flightId, messageText, setMessageText }: Messa
     },
   });
 
-  const { formState, handleSubmit, reset, setValue } = form;
-
-  useEffect(() => {
-    if (messageText) {
-      setValue("text", messageText);
-    }
-  }, [messageText, setValue]);
+  const { formState, handleSubmit, reset } = form;
 
   const onSubmit = async (data: FormData) => {
     if (!user || !firestore) {
@@ -67,7 +58,6 @@ export function MessagePostForm({ flightId, messageText, setMessageText }: Messa
     });
     
     reset();
-    setMessageText("");
     toast({
         title: t('room.postSuccess'),
         description: t('room.postSuccessDesc'),
@@ -114,10 +104,6 @@ export function MessagePostForm({ flightId, messageText, setMessageText }: Messa
                                     placeholder={t('room.postPlaceholder')}
                                     className="resize-none"
                                     {...field}
-                                    onChange={(e) => {
-                                        field.onChange(e);
-                                        setMessageText(e.target.value);
-                                    }}
                                 />
                                 </FormControl>
                                 <FormMessage />

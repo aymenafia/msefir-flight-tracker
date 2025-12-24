@@ -35,7 +35,7 @@ export type Flight = {
     lastUpdated: string;
 };
 
-export type MessageType = "boarding" | "gate" | "delay" | "info" | "question" | "system";
+export type MessageType = "boarding" | "gate" | "delay" | "info" | "question";
 
 export type RoomMessage = {
   id: string;
@@ -45,7 +45,7 @@ export type RoomMessage = {
   userId: string;
   userDisplayName: string;
   userPhotoURL: string | null;
-  createdAt: any; // Can be Firestore Timestamp or ISO string
+  createdAt: string;
   helpfulCount: number;
   unhelpfulCount: number;
 };

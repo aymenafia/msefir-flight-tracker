@@ -74,8 +74,7 @@
         "messageTypeGate": "بوابة",
         "messageTypeBoarding": "صعود",
         "messageTypeDelay": "تأخير",
-        "messageTypeQuestion": "سؤال",
-        "searchCount": "بحث {count} شخصًا عن هذه الرحلة مؤخرًا"
+        "messageTypeQuestion": "سؤال"
     },
     "page": {
         "notFound": "الصفحة غير موجودة",
@@ -83,18 +82,5 @@
         "globalError": "حدث خطأ ما",
         "globalErrorMessage": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
         "tryAgain": "حاول مرة أخرى"
-    },
-    "quickActions": {
-        "title": "أو استخدم إجراءً سريعًا:",
-        "boarding": "الصعود؟",
-        "boardingText": "هل بدأ الصعود؟ هل يمكن لأحد أن يؤكد؟",
-        "gateChange": "تغيير البوابة؟",
-        "gateChangeText": "هل تغيرت البوابة؟ إذا كانت الإجابة بنعم، إلى أين؟",
-        "delay": "تأخير؟",
-        "delayText": "هل هناك تأخير؟ دقائق أم سبب؟",
-        "checkIn": "تسجيل الوصول؟",
-        "checkInText": "أي مكتب تسجيل وصول يُستخدم الآن؟",
-        "atAirport": "في المطار",
-        "atAirportText": "أنا في المطار الآن. سأشارك التحديثات قريبًا."
     }
 }
