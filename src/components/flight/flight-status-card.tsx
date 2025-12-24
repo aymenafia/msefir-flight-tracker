@@ -2,7 +2,7 @@
 import type { Flight } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plane, Clock, Luggage, Milestone, DoorOpen } from "lucide-react";
+import { Plane, Clock, BaggageClaim, Milestone, DoorOpen } from "lucide-react";
 import { format, parseISO, isValid } from "date-fns";
 import { cn } from "@/lib/utils";
 import { FavoritesButton } from "./favorites-button";
@@ -162,7 +162,7 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
                         <p className="text-xs">{t('flight.gate')}</p>
                     </div>
                     <div className="bg-muted/30 p-2 rounded-md">
-                        <Luggage className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
+                        <BaggageClaim className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
                         <span className="font-semibold">{flight.arrival.baggage || "-"}</span>
                         <p className="text-xs">{t('flight.baggage')}</p>
                     </div>
