@@ -79,6 +79,9 @@
     },
     "page": {
         "notFound": "Page Not Found",
-        "notFoundMessage": "The page you are looking for does not exist or has been moved."
+        "notFoundMessage": "The page you are looking for does not exist or has been moved.",
+        "globalError": "Something went wrong",
+        "globalErrorMessage": "An unexpected error occurred. Please try again.",
+        "tryAgain": "Try Again"
     }
 }

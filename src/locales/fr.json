@@ -78,6 +78,9 @@
     },
     "page": {
         "notFound": "Page non trouvée",
-        "notFoundMessage": "La page que vous recherchez n'existe pas ou a été déplacée."
+        "notFoundMessage": "La page que vous recherchez n'existe pas ou a été déplacée.",
+        "globalError": "Une erreur est survenue",
+        "globalErrorMessage": "Une erreur inattendue est survenue. Veuillez réessayer.",
+        "tryAgain": "Réessayer"
     }
 }
