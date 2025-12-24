@@ -75,7 +75,7 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
         gate: flightData.arrival.gate,
         baggage: flightData.arrival.baggage,
       },
-      flight_status: flightData.flight_status || 'scheduled',
+      flight_status: flightData.flight_status,
       lastUpdated: new Date().toISOString(),
     };
 
