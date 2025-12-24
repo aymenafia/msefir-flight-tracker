@@ -1,3 +1,4 @@
+
 import type { Flight, FlightRoom, RoomMessage } from "./types";
 import { format } from "date-fns";
 
@@ -17,6 +18,7 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000);
+    console.log(`[data.ts] Fetching from AviationStack: ${url}`);
 
     const response = await fetch(url, { 
       signal: controller.signal,
@@ -31,6 +33,7 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
       return null;
     }
     const data = await response.json();
+    console.log('[data.ts] Raw API Response:', JSON.stringify(data, null, 2));
 
 
     if (data.error || !data.data || data.data.length === 0) {
@@ -45,6 +48,7 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
         console.error("[data.ts] Could not find a suitable flight from the API response.");
         return null;
     }
+    console.log('[data.ts] Selected flight data from API:', flightData);
 
     const normalized: Flight = {
       airline: {
@@ -79,6 +83,7 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
       flight_status: flightData.flight_status || 'scheduled',
       lastUpdated: new Date().toISOString(),
     };
+    console.log('[data.ts] Normalized flight object:', normalized);
     return normalized;
   } catch (error) {
     if (error instanceof Error) {
@@ -166,11 +171,13 @@ export const getFlightByNumber = async (
   flightNumber: string
 ): Promise<{ flight: Flight; room: FlightRoom; searchCount: number } | null> => {
   const upperCaseFlightNumber = flightNumber.toUpperCase();
+  console.log(`[data.ts] getFlightByNumber called for: ${upperCaseFlightNumber}`);
 
   try {
     const flight = await fetchFlightFromAPI(upperCaseFlightNumber);
 
     if (!flight) {
+      console.error(`[data.ts] getFlightByNumber: fetchFlightFromAPI returned null for ${upperCaseFlightNumber}.`);
       return null;
     }
 
@@ -186,6 +193,7 @@ export const getFlightByNumber = async (
     };
 
     const result = { flight, room, searchCount };
+    console.log('[data.ts] getFlightByNumber returning data:', result);
     return result;
 
   } catch (error: any) {
