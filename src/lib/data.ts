@@ -70,8 +70,7 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
         airport: flightData.arrival.airport,
         iata: flightData.arrival.iata,
         scheduled: flightData.arrival.scheduled,
-        // Ensure estimated arrival is not null. Fallback to scheduled if it is.
-        estimated: flightData.arrival.estimated || flightData.arrival.scheduled,
+        estimated: flightData.arrival.estimated,
         actual: flightData.arrival.actual,
         terminal: flightData.arrival.terminal,
         gate: flightData.arrival.gate,

@@ -30,12 +30,12 @@ const getStatusVariant = (status: Flight["flight_status"]) => {
   }
 };
 
-const formatTime = (dateString: string | null | undefined, fallbackString?: string | null) => {
-    const dateToParse = dateString || fallbackString;
-    if (!dateToParse) {
-        return "--:--";
+const formatTime = (dateString: string | null | undefined, fallbackString: string) => {
+    if (!dateString) {
+        const fallbackDate = parseISO(fallbackString);
+        return isValid(fallbackDate) ? format(fallbackDate, "HH:mm") : "--:--";
     }
-    const date = parseISO(dateToParse);
+    const date = parseISO(dateString);
     return isValid(date) ? format(date, "HH:mm") : "--:--";
 }
 
@@ -103,7 +103,7 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
                         {formatTime(estimatedDepartureTime, scheduledDepartureTime)}
                     </p>
                     <p className={cn("text-sm", flightStatus === "delayed" && "line-through text-muted-foreground")}>
-                        {t('flight.scheduledTime')} {formatTime(scheduledDepartureTime)}
+                        {t('flight.scheduledTime')} {formatTime(scheduledDepartureTime, scheduledDepartureTime)}
                     </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm text-center">
@@ -128,7 +128,7 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
                         {formatTime(estimatedArrivalTime, scheduledArrivalTime)}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                        {t('flight.scheduledTime')} {formatTime(scheduledArrivalTime)}
+                        {t('flight.scheduledTime')} {formatTime(scheduledArrivalTime, scheduledArrivalTime)}
                     </p>
                 </div>
                  <div className="grid grid-cols-3 gap-2 text-sm text-center">
