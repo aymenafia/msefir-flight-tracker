@@ -32,6 +32,7 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
       return null;
     }
     const data = await response.json();
+    console.log("Raw API Response:", JSON.stringify(data, null, 2));
 
     if (data.error || !data.data || data.data.length === 0) {
       if(data.error) console.error("AviationStack API returned an error:", data.error);
@@ -79,7 +80,7 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
       flight_status: flightData.flight_status || 'scheduled',
       lastUpdated: new Date().toISOString(),
     };
-
+    console.log("Normalized Flight Object:", JSON.stringify(normalized, null, 2));
     return normalized;
   } catch (error) {
     if (error instanceof Error) {
@@ -172,6 +173,7 @@ export const getFlightByNumber = async (
     const flight = await fetchFlightFromAPI(upperCaseFlightNumber);
 
     if (!flight) {
+      console.error(`getFlightByNumber: fetchFlightFromAPI returned null for ${upperCaseFlightNumber}.`);
       return null;
     }
 
@@ -192,7 +194,7 @@ export const getFlightByNumber = async (
     return { flight, room, searchCount };
 
   } catch (error: any) {
-    console.error(`Error fetching flight ${upperCaseFlightNumber}: ${error.message || 'Unknown error'}`);
+    console.error(`Error in getFlightByNumber for ${upperCaseFlightNumber}: ${error.message || 'Unknown error'}`);
     return null;
   }
 };
