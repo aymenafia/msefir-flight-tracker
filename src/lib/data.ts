@@ -4,21 +4,19 @@ import type { Flight, FlightRoom, RoomMessage } from "./types";
 async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
   const apiKey = process.env.AVIATIONSTACK_API_KEY;
 
-  if (!apiKey || apiKey === "YOUR_KEY_HERE") {
-    console.warn("AviationStack API key is not configured. Skipping API call.");
+  if (!apiKey) {
+    console.error("AviationStack API key is not configured in environment variables.");
     return null;
   }
 
   const airlineIata = flightIata.slice(0, 2);
   const flightNumber = flightIata.slice(2);
 
-  // Use HTTPS for the API endpoint. Free plans may be restricted to HTTP.
   const url = `https://api.aviationstack.com/v1/flights?access_key=${apiKey}&airline_iata=${airlineIata}&flight_number=${flightNumber}`;
 
   try {
-    // Set a timeout for the fetch request
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8-second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
 
     const response = await fetch(url, { 
       signal: controller.signal,
@@ -27,20 +25,24 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      // Log detailed API error from AviationStack if available
       const errorBody = await response.text();
       console.error(`AviationStack API error: ${response.statusText}`, errorBody);
       return null;
     }
     const data = await response.json();
 
-    // Check for API-level errors or no data
     if (data.error || !data.data || data.data.length === 0) {
       if(data.error) console.error("AviationStack API returned an error:", data.error);
       return null;
     }
 
     const flightData = data.data[0];
+
+    // Added a check to ensure flightData is not null before proceeding
+    if (!flightData) {
+      console.log("No flight data found for the given IATA.", flightIata);
+      return null;
+    }
 
     const normalized: Flight = {
       airline: {
@@ -78,7 +80,11 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
 
     return normalized;
   } catch (error) {
-    console.error("Failed to fetch from AviationStack:", error);
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error("AviationStack API request timed out.");
+    } else {
+      console.error("Failed to fetch from AviationStack:", error);
+    }
     return null;
   }
 }
