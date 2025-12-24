@@ -39,10 +39,10 @@ async function fetchFlightFromAPI(flightIata: string): Promise<Flight | null> {
     }
     
     // Select the most relevant flight: prefer 'active', then 'scheduled'
-    const flightData = data.data.find((f: any) => f.flight_status === 'active') || data.data.find((f: any) => f.flight_status === 'scheduled');
+    const flightData = data.data.find((f: any) => f.flight_status === 'active') || data.data.find((f: any) => f.flight_status === 'scheduled') || data.data[0];
     
     if (!flightData) {
-      console.log("No active or scheduled flight data found for the given IATA.", flightIata);
+      console.log("No valid flight data found for the given IATA.", flightIata);
       return null;
     }
 
