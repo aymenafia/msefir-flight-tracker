@@ -1,18 +1,21 @@
 
 'use client';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div style={{ fontFamily: 'sans-serif', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '1rem', backgroundColor: '#F7F9FC' }}>
-      <div>
-        <h1 style={{ fontSize: '2.25rem', fontWeight: 'bold', color: '#0F2A44', marginTop: '1.5rem' }}>Page Not Found</h1>
-        <p style={{ marginTop: '0.5rem', fontSize: '1.125rem', color: '#6B7A90' }}>
+    <div className="container mx-auto max-w-4xl p-4 md:p-8 text-center">
+      <div className="py-20">
+        <AlertTriangle className="mx-auto h-16 w-16 text-primary" />
+        <h2 className="mt-6 text-4xl font-bold tracking-tight text-primary">Page Not Found</h2>
+        <p className="mt-2 text-lg text-muted-foreground">
           The page you are looking for does not exist or has been moved.
         </p>
-        <Link href="/" style={{ display: 'inline-block', marginTop: '2rem', backgroundColor: '#0F2A44', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.5rem', textDecoration: 'none', fontSize: '1rem' }}>
-          Back to Home
-        </Link>
+        <Button asChild className="mt-8" size="lg">
+          <Link href="/">Back to Home</Link>
+        </Button>
       </div>
     </div>
   );

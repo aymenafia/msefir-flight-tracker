@@ -31,11 +31,7 @@ const getStatusVariant = (status: Flight["flight_status"]) => {
 };
 
 const formatTime = (dateString: string | null | undefined, fallbackString: string) => {
-    if (!dateString) {
-        const fallbackDate = parseISO(fallbackString);
-        return isValid(fallbackDate) ? format(fallbackDate, "HH:mm") : "--:--";
-    }
-    const date = parseISO(dateString);
+    const date = dateString ? parseISO(dateString) : parseISO(fallbackString);
     return isValid(date) ? format(date, "HH:mm") : "--:--";
 }
 
@@ -43,9 +39,9 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
   const { t } = useTranslation();
 
   const scheduledDepartureTime = flight.departure.scheduled;
-  const estimatedDepartureTime = flight.departure.estimated;
+  const estimatedDepartureTime = flight.departure.estimated || scheduledDepartureTime;
   const scheduledArrivalTime = flight.arrival.scheduled;
-  const estimatedArrivalTime = flight.arrival.estimated;
+  const estimatedArrivalTime = flight.arrival.estimated || scheduledArrivalTime;
 
   const statusLabel: Record<string, string> = {
     scheduled: t('flight.statusScheduled'),
