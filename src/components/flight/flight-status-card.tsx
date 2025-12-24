@@ -4,7 +4,7 @@ import type { Flight } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plane, Clock, BaggageClaim, Milestone, DoorClosed } from "lucide-react";
-import { format, parseISO, isValid } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { FavoritesButton } from "./favorites-button";
 import { RefreshButton } from "./refresh-button";
@@ -30,18 +30,12 @@ const getStatusVariant = (status: Flight["flight_status"]) => {
   }
 };
 
-const formatTime = (dateString: string | null | undefined, fallbackString: string) => {
-    const date = dateString ? parseISO(dateString) : parseISO(fallbackString);
-    return isValid(date) ? format(date, "HH:mm") : "--:--";
-}
-
 export function FlightStatusCard({ flight }: FlightStatusCardProps) {
   const { t } = useTranslation();
-
-  const scheduledDepartureTime = flight.departure.scheduled;
-  const estimatedDepartureTime = flight.departure.estimated || scheduledDepartureTime;
-  const scheduledArrivalTime = flight.arrival.scheduled;
-  const estimatedArrivalTime = flight.arrival.estimated || scheduledArrivalTime;
+  const scheduledDepartureTime = parseISO(flight.departure.scheduled);
+  const estimatedDepartureTime = parseISO(flight.departure.estimated);
+  const scheduledArrivalTime = parseISO(flight.arrival.scheduled);
+  const estimatedArrivalTime = parseISO(flight.arrival.estimated || flight.arrival.scheduled);
 
   const statusLabel: Record<string, string> = {
     scheduled: t('flight.statusScheduled'),
@@ -53,7 +47,6 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
   }
 
   const flightStatus = flight.flight_status || 'scheduled';
-  const lastUpdatedDate = parseISO(flight.lastUpdated);
 
   return (
     <Card className="shadow-lg overflow-hidden">
@@ -96,10 +89,10 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
                         "text-2xl font-semibold",
                         flightStatus === "delayed" && "text-warning-foreground bg-warning/10 rounded-md py-1"
                     )}>
-                        {formatTime(estimatedDepartureTime, scheduledDepartureTime)}
+                        {format(estimatedDepartureTime, "HH:mm")}
                     </p>
                     <p className={cn("text-sm", flightStatus === "delayed" && "line-through text-muted-foreground")}>
-                        {t('flight.scheduledTime')} {formatTime(scheduledDepartureTime, scheduledDepartureTime)}
+                        {t('flight.scheduledTime')} {format(scheduledDepartureTime, "HH:mm")}
                     </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm text-center">
@@ -121,10 +114,10 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
                  <div className="bg-muted/30 p-4 rounded-lg text-center">
                     <p className="text-sm font-medium text-muted-foreground">{t('flight.arrival')}</p>
                     <p className="text-2xl font-semibold">
-                        {formatTime(estimatedArrivalTime, scheduledArrivalTime)}
+                        {format(estimatedArrivalTime, "HH:mm")}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                        {t('flight.scheduledTime')} {formatTime(scheduledArrivalTime, scheduledArrivalTime)}
+                        {t('flight.scheduledTime')} {format(scheduledArrivalTime, "HH:mm")}
                     </p>
                 </div>
                  <div className="grid grid-cols-3 gap-2 text-sm text-center">
@@ -150,7 +143,7 @@ export function FlightStatusCard({ flight }: FlightStatusCardProps) {
       <CardFooter className="bg-muted/30 p-3 text-center">
         <p className="w-full text-xs text-muted-foreground flex items-center justify-center gap-1">
           <Clock className="w-3 h-3" />
-          {isValid(lastUpdatedDate) ? `${t('flight.lastUpdated')}: ${format(lastUpdatedDate, "HH:mm:ss")}` : 'Updating...'}
+          {t('flight.lastUpdated')}: {format(parseISO(flight.lastUpdated), "HH:mm:ss")}
         </p>
       </CardFooter>
     </Card>
