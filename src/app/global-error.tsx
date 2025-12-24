@@ -40,7 +40,7 @@ export default function GlobalError({
     <html>
       <body>
         <LanguageProvider>
-          <ErrorContent reset={reset} />
+            <ErrorContent reset={reset} />
         </LanguageProvider>
       </body>
     </html>
