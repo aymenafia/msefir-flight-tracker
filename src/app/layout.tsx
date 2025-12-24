@@ -22,15 +22,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-body antialiased`}>
+        <LanguageProvider>
           <FirebaseClientProvider>
             <AuthManager />
             <AuthGate>
-              <LanguageProvider>
-                {children}
-              </LanguageProvider>
+              {children}
             </AuthGate>
             <Toaster />
           </FirebaseClientProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

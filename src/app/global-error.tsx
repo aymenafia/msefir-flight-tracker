@@ -1,12 +1,11 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { LanguageProvider } from '@/hooks/use-language';
 import { useTranslation } from '@/hooks/use-translation';
 import { AlertTriangle } from 'lucide-react';
 import { useEffect } from 'react';
 
-function GlobalErrorContent({
+export default function GlobalError({
   error,
   reset,
 }: {
@@ -36,16 +35,5 @@ function GlobalErrorContent({
         </div>
       </body>
     </html>
-  );
-}
-
-export default function GlobalError(props: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
-  return (
-    <LanguageProvider>
-      <GlobalErrorContent {...props} />
-    </LanguageProvider>
   );
 }
