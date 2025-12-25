@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,11 +9,17 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 
-export function FlightSearch() {
-  const [flightNumber, setFlightNumber] = useState("");
+export function FlightSearch({ initialFlightNumber }: { initialFlightNumber?: string }) {
+  const [flightNumber, setFlightNumber] = useState(initialFlightNumber || "");
   const [error, setError] = useState("");
   const router = useRouter();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (initialFlightNumber) {
+      setFlightNumber(initialFlightNumber);
+    }
+  }, [initialFlightNumber]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +27,7 @@ export function FlightSearch() {
 
     const trimmedFlightNumber = flightNumber.trim().toUpperCase();
     
-    const pattern = /^[A-Z]{2}\d{1,4}$/;
+    const pattern = /^[A-Z0-9]{2}\d{1,4}$/;
     if (!pattern.test(trimmedFlightNumber.replace(/\s+/g, ''))) {
       setError(t('flight.searchError'));
       return;
@@ -41,6 +46,7 @@ export function FlightSearch() {
       <CardContent>
         <form onSubmit={handleSearch} className="flex flex-col gap-4">
           <Input
+            id="flight-search-input"
             value={flightNumber}
             onChange={(e) => setFlightNumber(e.target.value)}
             placeholder={t('flight.searchPlaceholder')}

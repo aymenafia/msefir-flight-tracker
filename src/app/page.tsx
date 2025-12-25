@@ -1,13 +1,17 @@
 'use client';
 import { FlightSearch } from "@/components/flight/flight-search";
 import { FavoritesList } from "@/components/flight/favorites-list";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/hooks/use-translation";
 import { SupportedAirlines } from "@/components/home/supported-airlines";
+import { HolidayTravelSection } from "@/components/home/holiday-travel-section";
+import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
   const { t } = useTranslation();
+  const [selectedFlight, setSelectedFlight] = useState<string | undefined>();
+
   return (
     <div className="container mx-auto max-w-4xl p-4 md:p-8">
       <section className="text-center mb-12">
@@ -24,7 +28,7 @@ export default function Home() {
           <h2 className="text-2xl font-semibold tracking-tight mb-4">
             {t('home.findFlight')}
           </h2>
-          <FlightSearch />
+          <FlightSearch key={selectedFlight} initialFlightNumber={selectedFlight} />
         </div>
         <aside className="md:col-span-2">
            <h2 className="text-2xl font-semibold tracking-tight mb-4">
@@ -36,6 +40,10 @@ export default function Home() {
         </aside>
       </div>
 
+      <Separator className="my-12" />
+
+      <HolidayTravelSection onFlightSelect={setSelectedFlight} />
+      
       <SupportedAirlines />
     </div>
   );
