@@ -83,5 +83,21 @@
         "globalError": "Something went wrong",
         "globalErrorMessage": "An unexpected error occurred. Please try again.",
         "tryAgain": "Try Again"
+    },
+    "holiday": {
+        "header": "Going Home for New Year? ❤️",
+        "subheader": "Flights to Tunisia, Algeria and Morocco are filling up for the holidays.",
+        "cta": "Check flight status →",
+        "disclaimer": "Indicative values only — based on trends, not official airline inventory.",
+        "diasporaHeatTitle": "Diaspora Travel Heat 🔥",
+        "countryTunisia": "🇹🇳 Tunisia",
+        "countryAlgeria": "🇩🇿 Algeria",
+        "countryMorocco": "🇲🇦 Morocco",
+        "tunisiaTitle": "Paris ↔ Tunis",
+        "tunisiaSummary": "The classic holiday route is nearly full. Check your flight early!",
+        "algeriaTitle": "Marseille ↔ Algiers",
+        "algeriaSummary": "High demand from Marseille. Don't wait to check your flight status!",
+        "moroccoTitle": "Paris ↔ Casablanca",
+        "moroccoSummary": "Flights from Paris are in high demand. Keep an eye on your flight!"
     }
 }

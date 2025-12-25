@@ -82,5 +82,21 @@
         "globalError": "Une erreur est survenue",
         "globalErrorMessage": "Une erreur inattendue est survenue. Veuillez réessayer.",
         "tryAgain": "Réessayer"
+    },
+    "holiday": {
+        "header": "De retour à la maison pour le Nouvel An ? ❤️",
+        "subheader": "Les vols vers la Tunisie, l'Algérie et le Maroc se remplissent pour les fêtes.",
+        "cta": "Vérifier le statut du vol →",
+        "disclaimer": "Valeurs indicatives uniquement — basées sur les tendances, pas sur l'inventaire officiel des compagnies aériennes.",
+        "diasporaHeatTitle": "Tendance des voyages de la diaspora 🔥",
+        "countryTunisia": "🇹🇳 Tunisie",
+        "countryAlgeria": "🇩🇿 Algérie",
+        "countryMorocco": "🇲🇦 Maroc",
+        "tunisiaTitle": "Paris ↔ Tunis",
+        "tunisiaSummary": "La liaison classique des fêtes est presque complète. Vérifiez votre vol à l'avance !",
+        "algeriaTitle": "Marseille ↔ Alger",
+        "algeriaSummary": "Forte demande depuis Marseille. N'attendez pas pour vérifier le statut de votre vol !",
+        "moroccoTitle": "Paris ↔ Casablanca",
+        "moroccoSummary": "Les vols depuis Paris sont très demandés. Gardez un œil sur votre vol !"
     }
 }
