@@ -2,16 +2,31 @@
 import { useTranslation } from '@/hooks/use-translation';
 import { Card, CardContent } from '@/components/ui/card';
 
-const airlineNames = [
-  "Royal Air Maroc",
-  "Air Algérie",
-  "Tunisair",
-  "Nouvelair",
-  "Air Arabia Maroc"
-];
+// The list of airline names will now be fetched from the translation files.
+// Example keys: home.airlineNames.0, home.airlineNames.1, etc.
 
 export function SupportedAirlines() {
   const { t } = useTranslation();
+  
+  // A helper to safely get the array of airlines from translations
+  const getAirlineNames = () => {
+    const names = [];
+    let i = 0;
+    while (true) {
+      const key = `home.airlineNames.${i}`;
+      const name = t(key);
+      // If t(key) returns the key itself, it means the translation is not found.
+      if (name === key) {
+        break;
+      }
+      names.push(name);
+      i++;
+    }
+    return names;
+  };
+  
+  const airlineNames = getAirlineNames();
+
   return (
     <section className="mt-16 text-center">
       <h2 className="text-2xl font-semibold tracking-tight mb-6">

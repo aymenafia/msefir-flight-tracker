@@ -5,7 +5,14 @@
         "subtitle": "msefir — Suivez votre vol sans stress",
         "findFlight": "Trouvez votre vol",
         "myFlights": "Mes vols",
-        "supportedAirlines": "Couvrant les principales compagnies aériennes du Maghreb"
+        "supportedAirlines": "Couvrant les principales compagnies aériennes du Maghreb",
+        "airlineNames": [
+            "Royal Air Maroc",
+            "Air Algérie",
+            "Tunisair",
+            "Nouvelair",
+            "Air Arabia Maroc"
+        ]
     },
     "footer": {
         "tagline": "msefir — Suivez votre vol sans stress",
