@@ -4,7 +4,6 @@ import { FavoritesList } from "@/components/flight/favorites-list";
 import { Suspense, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/hooks/use-translation";
-import { SupportedAirlines } from "@/components/home/supported-airlines";
 import { HolidayTravelSection } from "@/components/home/holiday-travel-section";
 import { Separator } from "@/components/ui/separator";
 
@@ -44,9 +43,6 @@ export default function Home() {
 
       <HolidayTravelSection onFlightSelect={setSelectedFlight} />
       
-      <div className="mt-16">
-        <SupportedAirlines />
-      </div>
     </div>
   );
 }

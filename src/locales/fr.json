@@ -4,14 +4,7 @@
         "title": "Suivez le statut de votre vol",
         "subtitle": "msefir — Suivez votre vol sans stress",
         "findFlight": "Trouvez votre vol",
-        "myFlights": "Mes vols",
-        "airlineNames": [
-            "Royal Air Maroc",
-            "Air Algérie",
-            "Tunisair",
-            "Nouvelair",
-            "Air Arabia Maroc"
-        ]
+        "myFlights": "Mes vols"
     },
     "footer": {
         "tagline": "msefir — Suivez votre vol sans stress",
