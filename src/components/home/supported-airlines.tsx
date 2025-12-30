@@ -2,6 +2,14 @@
 import { useTranslation } from '@/hooks/use-translation';
 import { Card, CardContent } from '@/components/ui/card';
 
+const airlineNames = [
+  "Royal Air Maroc",
+  "Air Algérie",
+  "Tunisair",
+  "Nouvelair",
+  "Air Arabia Maroc"
+];
+
 export function SupportedAirlines() {
   const { t } = useTranslation();
   return (
@@ -11,42 +19,12 @@ export function SupportedAirlines() {
       </h2>
       <Card>
         <CardContent className="p-8">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-y-8 gap-x-4 items-center justify-center">
-            <div className="flex justify-center">
-              <img
-                src="/images/airlines/Logo_Royal_Air_Maroc.png"
-                alt="Royal Air Maroc logo"
-                className="h-10 w-auto object-contain"
-              />
-            </div>
-            <div className="flex justify-center">
-              <img
-                src="/images/airlines/AirAlgerieLogo.png"
-                alt="Air Algérie logo"
-                className="h-10 w-auto object-contain"
-              />
-            </div>
-            <div className="flex justify-center">
-              <img
-                src="/images/airlines/TunisAir_Logo.png"
-                alt="Tunisair logo"
-                className="h-10 w-auto object-contain"
-              />
-            </div>
-            <div className="flex justify-center">
-              <img
-                src="/images/airlines/Nouvelair_Logo.png"
-                alt="Nouvelair logo"
-                className="h-10 w-auto object-contain"
-              />
-            </div>
-            <div className="flex justify-center">
-              <img
-                src="/images/airlines/Air_Arabia_Logo.jpg"
-                alt="Air Arabia Maroc logo"
-                className="h-10 w-auto object-contain"
-              />
-            </div>
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+            {airlineNames.map((name) => (
+              <p key={name} className="text-muted-foreground font-medium">
+                {name}
+              </p>
+            ))}
           </div>
         </CardContent>
       </Card>
