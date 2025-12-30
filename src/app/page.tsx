@@ -44,7 +44,9 @@ export default function Home() {
 
       <HolidayTravelSection onFlightSelect={setSelectedFlight} />
       
-      <SupportedAirlines />
+      <div className="mt-16">
+        <SupportedAirlines />
+      </div>
     </div>
   );
 }

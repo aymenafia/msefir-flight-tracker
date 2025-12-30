@@ -27,11 +27,12 @@ export function SupportedAirlines() {
   
   const airlineNames = getAirlineNames();
 
+  if (airlineNames.length === 0) {
+    return null;
+  }
+
   return (
-    <section className="mt-16 text-center">
-      <h2 className="text-2xl font-semibold tracking-tight mb-6">
-        {t('home.supportedAirlines')}
-      </h2>
+    <section className="text-center">
       <Card>
         <CardContent className="p-8">
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
